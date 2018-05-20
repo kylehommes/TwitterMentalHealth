@@ -33,6 +33,7 @@ library(lsa)
 library(SnowballC)
 library(scatterplot3d)
 library(LSAfun)
+library(maps)
 ```
 ```{r wordcloud,include=FALSE}
 # Code to include wordcloud in .pdf knit
@@ -171,7 +172,8 @@ userlocation3 <- geocode(userframe.dt$location[6001:8000])
 userlocation4 <- geocode(userframe.dt$location[8001:10000])
 userlocation5 <- geocode(userframe.dt$location[10001:12000])
 userlocation6 <- geocode(userframe.dt$location[12001:14000])
-userlocation7 <- geocode(userframe.dt$location[14001:14804])
+userlocation7 <- geocode(userframe.dt$location[14001:16000])
+userlocation8 <- geocode(userframe.dt$location[16001:17066])
 location <- bind_rows(userlocation,userlocation1)
 ```
 Exploratory Data Analysis:
