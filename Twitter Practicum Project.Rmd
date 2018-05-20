@@ -185,7 +185,10 @@ wordcloud2(sfreq.df)
 wordcloud2(dfreq.df)
 wordcloud2(totfreq.df)
 wordcloud(mhafreq.df$word,mhafreq.df$freq,max.words=100,colors=brewer.pal(8,"Dark2"),scale=c(3,0.5),random.order=F)
-ggplot(totaltweet) + geom_bar(aes(isRetweet))
+ggplot(totaltweet) + geom_bar(aes(x = isRetweet, fill = isRetweet), stat = 'count') + geom_text(stat = 'count', aes(x = isRetweet,label=..count..), vjust = 3)
+ggplot(totaltweet) + geom_bar(aes(x = isRetweet, fill = hashtag)) + 
+  facet_wrap(~hashtag) + geom_text(stat = 'count',
+  aes(x = isRetweet, label=..count..), vjust = 1)
 worldMap <- map_data("world")
 loc_plot <- ggplot(worldMap)
 loc_plot + geom_path(aes(x = long, y = lat, group = group)) + geom_point(data = location,aes(x=lon,y=lat),color="RED",size=.25)
