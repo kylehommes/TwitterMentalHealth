@@ -11,6 +11,6 @@ May is mental health month and this often means an increase in postings about me
 - #ptsd
 - #suicide
 
-were collected analyzed in order to better understand how mental health issues are communicated on Twitter.
+were collected analyzed using R in order to better understand how mental health issues are communicated on Twitter.
 
 # Exploratory Data Analysis
