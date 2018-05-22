@@ -34,6 +34,10 @@ library(SnowballC)
 library(scatterplot3d)
 library(LSAfun)
 library(maps)
+library(cluster)
+library(kmed)
+library(NbClust)
+library(factoextra)
 ```
 ```{r wordcloud,include=FALSE}
 # Code to include wordcloud in .pdf knit
@@ -60,121 +64,6 @@ Code for extracting the tweets is in Twitter Pulls.R. The hashtags pulled were:
 #ptsd
 #suicide
 ```{r}
-```
-Clean the Data:
-```{r}
-mhatweet <- twListToDF(mentalhealthawarenesstweets)
-anxtweet <- twListToDF(anxietytweets)
-deptweet <- twListToDF(depressiontweets)
-ptsdtweet <- twListToDF(ptsdtweets)
-suitweet <- twListToDF(suicidetweets)
-totaltweet <- bind_rows(mhatweet %>% mutate(hashtag = "MHA"),
-  anxtweet %>% mutate(hashtag = "Anxiety"), deptweet %>%
-  mutate(hashtag = "Depression"), ptsdtweet %>% 
-  mutate(hashtag = "PTSD"), suitweet %>% 
-  mutate(hashtag = "Suicide"))
-
-# Cleaned the tweets for tidy analysis with code adapted from 
-# https://www.tidytextmining.com
-replace_reg <- "https://t.co/[A-Za-z\\d]+|http://[A-Za-z\\d]+|&amp;|&lt;|&gt;|RT|https"
-unnest_reg <- "([^A-Za-z_\\d#@']|'(?![A-Za-z_\\d#@]))"
-tidytweet <- totaltweet %>%
-  group_by(hashtag) %>% 
-  dplyr::mutate(linenumber = row_number()) %>%
-  ungroup() %>% filter(!str_detect(text, "^RT")) %>%
-  mutate(text = str_replace_all(text, replace_reg, "")) %>%
-  unnest_tokens(word, text, token = "regex", 
-  pattern = unnest_reg) %>%
-  filter(!word %in% stop_words$word, str_detect(word, "[a-z]"))
-
-# Cleaning process for TDM creating using tm package
-ctrl <- list(removePunctuation= list(preserve_intra_word_dashes = T), tolower= T, stopwords= c(stopwords(kind = "en"), removeNumbers= T))
-mhatxt <- sapply(mentalhealthawarenesstweets, 
-  function(x) x$getText())
-mhatxt <- iconv(mhatxt, "latin1", "ASCII", sub = "")
-mhatxt <- gsub("http(s?)([^ ]*)", " ", mhatxt, ignore.case = T)
-mhatxt <- gsub("&amp", "and", mhatxt)
-mhacorpus <- VCorpus(VectorSource(mhatxt))
-mhatdm <- TermDocumentMatrix(x= mhacorpus, control= ctrl)
-mhadtm <- DocumentTermMatrix(x= mhacorpus, control= ctrl)
-mhafreq <- sort(rowSums(as.matrix(mhatdm)), decreasing = T)
-mhafreq.df <- data.frame(word = names(mhafreq), 
-  freq = mhafreq, stringsAsFactors = F, row.names = NULL)
-stxt <- sapply(suicidetweets, 
-  function(x) x$getText())
-stxt <- iconv(stxt, "latin1", "ASCII", sub = "")
-stxt <- gsub("http(s?)([^ ]*)", " ", stxt, ignore.case = T)
-stxt <- gsub("&amp", "and", stxt)
-scorpus <- VCorpus(VectorSource(stxt))
-stdm <- TermDocumentMatrix(x= scorpus, control= ctrl)
-sdtm <- DocumentTermMatrix(x= scorpus, control= ctrl)
-sfreq <- sort(rowSums(as.matrix(stdm)), decreasing = T)
-sfreq.df <- data.frame(word = names(sfreq), 
-  freq = sfreq, stringsAsFactors = F, row.names = NULL)
-atxt <- sapply(anxietytweets, 
-  function(x) x$getText())
-atxt <- iconv(atxt, "latin1", "ASCII", sub = "")
-atxt <- gsub("http(s?)([^ ]*)", " ", atxt, ignore.case = T)
-atxt <- gsub("&amp", "and", atxt)
-acorpus <- VCorpus(VectorSource(atxt))
-atdm <- TermDocumentMatrix(x= acorpus, control= ctrl)
-adtm <- DocumentTermMatrix(x= acorpus, control= ctrl)
-afreq <- sort(rowSums(as.matrix(atdm)), decreasing = T)
-afreq.df <- data.frame(word = names(afreq), 
-  freq = afreq, stringsAsFactors = F, row.names = NULL)
-dtxt <- sapply(depressiontweets, 
-  function(x) x$getText())
-dtxt <- iconv(dtxt, "latin1", "ASCII", sub = "")
-dtxt <- gsub("http(s?)([^ ]*)", " ", dtxt, ignore.case = T)
-dtxt <- gsub("&amp", "and", dtxt)
-dcorpus <- VCorpus(VectorSource(dtxt))
-dtdm <- TermDocumentMatrix(x= dcorpus, control= ctrl)
-ddtm <- DocumentTermMatrix(x= dcorpus, control= ctrl)
-dfreq <- sort(rowSums(as.matrix(dtdm)), decreasing = T)
-dfreq.df <- data.frame(word = names(dfreq), 
-  freq = dfreq, stringsAsFactors = F, row.names = NULL)
-ptxt <- sapply(ptsdtweets, 
-  function(x) x$getText())
-ptxt <- iconv(ptxt, "latin1", "ASCII", sub = "")
-ptxt <- gsub("http(s?)([^ ]*)", " ", ptxt, ignore.case = T)
-ptxt <- gsub("&amp", "and", ptxt)
-pcorpus <- VCorpus(VectorSource(ptxt))
-ptdm <- TermDocumentMatrix(x= pcorpus, control= ctrl)
-pdtm <- DocumentTermMatrix(x= pcorpus, control= ctrl)
-pfreq <- sort(rowSums(as.matrix(ptdm)), decreasing = T)
-pfreq.df <- data.frame(word = names(pfreq), 
-  freq = pfreq, stringsAsFactors = F, row.names = NULL)
-tottxt <- totaltweet$text
-tottxt <- iconv(tottxt, "latin1", "ASCII", sub = "")
-tottxt <- gsub("http(s?)([^ ]*)", " ", tottxt, ignore.case = T)
-tottxt <- gsub("&amp", "and", tottxt)
-totcorpus <- VCorpus(VectorSource(tottxt))
-totcorpus <- tm_map(totcorpus, PlainTextDocument)
-tottdm <- TermDocumentMatrix(x= totcorpus, control= ctrl)
-totdtm <- DocumentTermMatrix(x= totcorpus, control= ctrl)
-totfreq <- sort(rowSums(as.matrix(tottdm)), decreasing = T)
-totfreq.df <- data.frame(word = names(totfreq), 
-  freq = totfreq, stringsAsFactors = F, row.names = NULL)
-```
-Geocode for locations:
-```{r}
-register_google(key = google.key)
-mhtweets.df <- twListToDF(mentalhealthawarenesstweets)
-userinfo <- lookupUsers(mhtweets.df$screenName)
-userframe <- twListToDF(userinfo)
-userframe.dt <- data.table(userframe)
-userframe.dt$location <-
-  userframe.dt$location[!userframe.dt$location %in% ""]
-userlocation <- geocode(userframe.dt$location[1:2000])
-userlocation1 <- geocode(userframe.dt$location[2001:4000])
-userlocation2 <- geocode(userframe.dt$location[4001:6000])
-userlocation3 <- geocode(userframe.dt$location[6001:8000])
-userlocation4 <- geocode(userframe.dt$location[8001:10000])
-userlocation5 <- geocode(userframe.dt$location[10001:12000])
-userlocation6 <- geocode(userframe.dt$location[12001:14000])
-userlocation7 <- geocode(userframe.dt$location[14001:16000])
-userlocation8 <- geocode(userframe.dt$location[16001:17066])
-location <- bind_rows(userlocation,userlocation1)
 ```
 Exploratory Data Analysis:
 ```{r,error=FALSE,warning=FALSE,message=FALSE}
@@ -264,12 +153,23 @@ tweet_sentiment <- tidytweet %>%
   dplyr::count(hashtag, index = linenumber %/% 50,sentiment) %>%
   spread(sentiment, n, fill = 0) %>%
   mutate(sentiment = positive - negative)
+tweet_sentiment_nrc <- tidytweet %>%
+  inner_join(get_sentiments("nrc")) %>%
+  group_by(index = linenumber %/% 50, hashtag, sentiment) %>%
+  summarize(n = n())
+ggplot(tweet_sentiment_nrc) + 
+  geom_bar(aes(x = index, y = n, fill = hashtag), 
+  stat = "identity") + facet_wrap(~sentiment, ncol = 5)
 ggplot(tweet_sentiment,aes(index, sentiment,fill = hashtag)) +
   geom_col(show.legend = FALSE) +
   facet_wrap(~hashtag, ncol = 2, scales = "free_x")
 bing_word_counts <- tidytweet %>%
   inner_join(get_sentiments("bing")) %>%
   dplyr::count(word, sentiment, sort = TRUE) %>%
+  ungroup()
+bing_word_hashtag_counts <- tidytweet %>%
+  inner_join(get_sentiments("bing")) %>%
+  dplyr::count(word, hashtag, sentiment, sort = TRUE) %>%
   ungroup()
 bing_word_counts %>%
   group_by(sentiment) %>%
@@ -278,6 +178,44 @@ bing_word_counts %>%
   mutate(word = reorder(word, n)) %>%
   ggplot(aes(word, n, fill = sentiment)) +
   geom_col(show.legend = FALSE) +
+  facet_wrap(~sentiment, scales = "free_y") +
+  labs(y = "Contribution to sentiment",x = NULL) +
+  coord_flip()
+bing_word_hashtag_counts %>%
+  group_by(hashtag,sentiment) %>%
+  top_n(5) %>%
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n, fill = sentiment)) +
+  geom_col(show.legend = TRUE) +
+  facet_wrap(~hashtag, scales = "free_y") +
+  labs(y = "Contribution to sentiment",x = NULL) +
+  coord_flip()
+bing_word_counts_nrc <- tidytweet %>%
+  inner_join(get_sentiments("nrc")) %>%
+  dplyr::count(word, sentiment, sort = TRUE) %>%
+  ungroup()
+bing_word_counts_nrc %>%
+  group_by(sentiment) %>%
+  top_n(10) %>%
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~sentiment, scales = "free_y") +
+  labs(y = "Contribution to sentiment",x = NULL) +
+  coord_flip()
+bing_word_hashtag_counts_nrc <- tidytweet %>%
+  inner_join(get_sentiments("nrc")) %>%
+  dplyr::count(word, hashtag, sentiment, sort = TRUE) %>%
+  ungroup()
+bing_word_hashtag_counts_nrc %>%
+  group_by(hashtag,sentiment) %>%
+  top_n(2) %>%
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n, fill = hashtag)) +
+  geom_col(show.legend = TRUE) +
   facet_wrap(~sentiment, scales = "free_y") +
   labs(y = "Contribution to sentiment",x = NULL) +
   coord_flip()
@@ -409,9 +347,10 @@ fourgram_tf_idf %>%
 ```
 LSA:
 ```{r}
-tottdm <- removeSparseTerms(tottdm, sparse = 0.99)
+tottdm <- removeSparseTerms(tottdm, sparse = 0.999)
 tottdm_tfidf <- weightTfIdf(tottdm)
-totlsa <- lsa(tottdm_tfidf)
+totlsa <- lsa(tottdm_tfidf, dims = 5)
+totlsa_topics <- lsa(tottdm_tfidf, dims = 10)
 ```
 Word Associations
 ```{r}
@@ -422,7 +361,27 @@ Word Associations
 
 Clustering:
 ```{r}
-
+set.seed(1234)
+d <- dist(t(totlsa$tk), method="manhattan")
+d <- as.matrix(d)
+fviz_nbclust(d, pam, method = "wss") + theme_classic()
+totlsa.tk <- as.data.frame(totlsa$tk)
+totclust <- pam(totlsa.tk, 3, metric = "manhattan")
+totclust$clustering
+clusters <- as.data.frame(totclust$clustering)
+clusters$word <- row.names(clusters)
+colnames(clusters) <- c("cluster", "word")
+hashtag_word_clust <- hashtag_words %>% inner_join(clusters)
+hashtag_word_clust %>%
+  group_by(cluster) %>% 
+  top_n(10, n) %>% 
+  ungroup %>%
+  ggplot(aes(word, n, fill = factor(cluster))) +
+  geom_col(show.legend = TRUE) +
+  labs(x = NULL, y = "tf-idf") +
+  facet_wrap(~cluster, ncol = 3, scales = "free") +
+  coord_flip() + labs(y = "Frequency of Use", x = "Word",
+  title = "Top 5 words per cluster", fill = "Cluster")
 ```
 
 
