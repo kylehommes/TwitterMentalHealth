@@ -351,6 +351,21 @@ tottdm <- removeSparseTerms(tottdm, sparse = 0.999)
 tottdm_tfidf <- weightTfIdf(tottdm)
 totlsa <- lsa(tottdm_tfidf, dims = 5)
 totlsa_topics <- lsa(tottdm_tfidf, dims = 10)
+totlsa_topics$dk[1:100,]
+totlsa_topics$dk[25000:25100,]
+totlsa_topics$dk[45:45100,]
+totlsa_topics$dk[65:65100,]
+totlsa_topics$dk[85000:85100,]
+which.max(totlsa_topics$tk[,1])
+which.max(totlsa_topics$tk[,2])
+which.max(totlsa_topics$tk[,3])
+which.max(totlsa_topics$tk[,4])
+which.max(totlsa_topics$tk[,5])
+which.max(totlsa_topics$tk[,6])
+which.max(totlsa_topics$tk[,7])
+which.max(totlsa_topics$tk[,8])
+which.max(totlsa_topics$tk[,9])
+which.max(totlsa_topics$tk[,10])
 ```
 Word Associations
 ```{r}
