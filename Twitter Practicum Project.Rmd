@@ -347,15 +347,10 @@ fourgram_tf_idf %>%
 ```
 LSA:
 ```{r}
-tottdm <- removeSparseTerms(tottdm, sparse = 0.999)
-tottdm_tfidf <- weightTfIdf(tottdm)
+tottdm_sparse <- removeSparseTerms(tottdm, sparse = 0.98)
+tottdm_tfidf <- weightTfIdf(tottdm_sparse)
 totlsa <- lsa(tottdm_tfidf, dims = 5)
 totlsa_topics <- lsa(tottdm_tfidf, dims = 10)
-totlsa_topics$dk[1:100,]
-totlsa_topics$dk[25000:25100,]
-totlsa_topics$dk[45:45100,]
-totlsa_topics$dk[65:65100,]
-totlsa_topics$dk[85000:85100,]
 which.max(totlsa_topics$tk[,1])
 which.max(totlsa_topics$tk[,2])
 which.max(totlsa_topics$tk[,3])
@@ -366,6 +361,35 @@ which.max(totlsa_topics$tk[,7])
 which.max(totlsa_topics$tk[,8])
 which.max(totlsa_topics$tk[,9])
 which.max(totlsa_topics$tk[,10])
+docu <- as.data.frame(totlsa_topics$dk)
+colnames(docu) <- c("TopicA", "TopicB", "TopicC", "TopicD",
+  "TopicE", "TopicF", "TopicG", "TopicH", "TopicI", "TopicJ")
+doc_topics <- as.data.frame(colnames(docu)[apply(docu,1,which.max)])
+colnames(doc_topics) <- "Topic"
+ggplot(doc_topics) + 
+  geom_bar(aes(x = Topic, fill = Topic)) + 
+  geom_text(aes( x = Topic, label = ..count..),
+  stat = "count", vjust = -1) + ylim(-1000,30000)
+term_topics <- as.data.frame(totlsa_topics$tk)
+colnames(term_topics) <- c("TopicA", "TopicB", "TopicC", "TopicD",
+  "TopicE", "TopicF", "TopicG", "TopicH", "TopicI", "TopicJ")
+term_top_list <- 
+  as.data.frame(colnames(term_topics)[apply(term_topics,
+  1,which.max)])
+colnames(term_top_list) <- "Topic"
+term_topics$word <- row.names(term_topics)
+term_topics <- term_topics %>% bind_cols(term_top_list)
+term_topics1 <- term_topics %>% select(TopicA,word) %>% arrange(TopicA) %>% as.data.frame()
+term_topics1 <- term_topics1[c(1:5),]
+term_topics2 <- term_topics %>% select(TopicB,word) %>%
+  arrange(TopicB) %>% as.data.frame()
+term_topics2 <- term_topics2[c(1:5),]
+term_topics3 <- term_topics %>% select(TopicC,word) %>%
+  arrange(TopicC) %>% as.data.frame()
+term_topics1 <- term_topics1[c(1:5),]
+term_topics4 <- term_topics %>% select(TopicD,word) %>%
+  arrange(TopicD) %>% as.data.frame()
+term_topics4 <- term_topics1[c(1:5),]
 ```
 Word Associations
 ```{r}
