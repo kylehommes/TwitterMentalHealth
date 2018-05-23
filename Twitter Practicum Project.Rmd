@@ -346,11 +346,10 @@ fourgram_tf_idf %>%
   x = "")
 ```
 LSA:
-```{r}
-tottdm_sparse <- removeSparseTerms(tottdm, sparse = 0.98)
-tottdm_tfidf <- weightTfIdf(tottdm_sparse)
-totlsa <- lsa(tottdm_tfidf, dims = 5)
-totlsa_topics <- lsa(tottdm_tfidf, dims = 10)
+```{r,message=FALSE,warning=FALSE,error=FALSE}
+tottdm_sparse_lsa <- removeSparseTerms(tottdm, sparse = 0.99)
+tottdm_tfidf_lsa <- weightTfIdf(tottdm_sparse_lsa)
+totlsa_topics <- lsa(tottdm_tfidf_lsa, dims = 10)
 which.max(totlsa_topics$tk[,1])
 which.max(totlsa_topics$tk[,2])
 which.max(totlsa_topics$tk[,3])
@@ -367,11 +366,12 @@ colnames(docu) <- c("TopicA", "TopicB", "TopicC", "TopicD",
 doc_topics <- as.data.frame(colnames(docu)[apply(docu,1,which.max)])
 colnames(doc_topics) <- "Topic"
 ggplot(doc_topics) + 
-  geom_bar(aes(x = Topic, fill = Topic),show.legend = FALSE) + 
-  geom_text(aes( x = Topic, label = ..count..),
+  geom_bar(aes(x = factor(Topic), fill = factor(Topic)), 
+  show.legend = FALSE) + 
+  geom_text(aes( x = factor(Topic), label = ..count..),
   stat = "count", vjust = -1) + ylim(-1000,30000) +
   labs(x = "Topic", y = "Count", 
-  title = "Number of Tweets in Each LSA Topic")
+  title = "Number of Tweets most associated with Each LSA Topic")
 term_topics <- as.data.frame(totlsa_topics$tk)
 colnames(term_topics) <- c("TopicA", "TopicB", "TopicC", "TopicD",
   "TopicE", "TopicF", "TopicG", "TopicH", "TopicI", "TopicJ")
@@ -439,12 +439,16 @@ Word Associations
 Clustering:
 ```{r}
 set.seed(1234)
-d <- dist(t(totlsa$tk), method="manhattan")
-d <- as.matrix(d)
-fviz_nbclust(d, pam, method = "wss") + theme_classic()
+tottdm_sparse <- removeSparseTerms(tottdm, sparse = 0.999)
+tottdm_tfidf <- weightTfIdf(tottdm_sparse)
+totlsa_topics_clust <- lsa(tottdm_tfidf, dims = 10)
+d <- dist(t(totlsa_topics_clust$tk), method="manhattan")
+d <- data.table(d)
+fviz_nbclust(d, pam, k.max = 15, method = "wss") +
+  theme_classic() + geom_vline(xintercept = 3, linetype = 2)
 totlsa.tk <- as.data.frame(totlsa$tk)
 totclust <- pam(totlsa.tk, 3, metric = "manhattan")
-totclust$clustering
+head(totclust$clustering, 10)
 clusters <- as.data.frame(totclust$clustering)
 clusters$word <- row.names(clusters)
 colnames(clusters) <- c("cluster", "word")
