@@ -386,10 +386,16 @@ term_topics2 <- term_topics %>% select(TopicB,word) %>%
 term_topics2 <- term_topics2[c(1:5),]
 term_topics3 <- term_topics %>% select(TopicC,word) %>%
   arrange(TopicC) %>% as.data.frame()
-term_topics1 <- term_topics1[c(1:5),]
+term_topics1 <- term_topics3[c(1:5),]
 term_topics4 <- term_topics %>% select(TopicD,word) %>%
   arrange(TopicD) %>% as.data.frame()
-term_topics4 <- term_topics1[c(1:5),]
+term_topics4 <- term_topics4[c(1:5),]
+term_topics5 <- term_topics %>% select(TopicE,word) %>%
+  arrange(TopicE) %>% as.data.frame()
+term_topics5 <- term_topics1[c(1:5),]
+term_topics6 <- term_topics %>% select(TopicF,word) %>%
+  arrange(TopicF) %>% as.data.frame()
+term_topics6 <- term_topics1[c(1:5),]
 ```
 Word Associations
 ```{r}
