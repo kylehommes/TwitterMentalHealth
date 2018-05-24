@@ -463,6 +463,18 @@ hashtag_word_clust %>%
   facet_wrap(~cluster, ncol = 3, scales = "free") +
   coord_flip() + labs(y = "Frequency of Use", x = "Word",
   title = "Top 5 words per cluster", fill = "Cluster")
+ggplot(hashtag_word_clust) + geom_bar(aes(x = factor(cluster), 
+  fill = factor(cluster)), show.legend = FALSE) +
+  geom_test(aes(x = factor(cluster), label = ..count..),
+  stat = "count", vjust = -1) + labs(x = "Cluster", 
+  y = "Number of Tweets", title = "Number of Tweets per Cluster")
+ggplot(doc_topics) + 
+  geom_bar(aes(x = factor(Topic), fill = factor(Topic)), 
+  show.legend = FALSE) + 
+  geom_text(aes( x = factor(Topic), label = ..count..),
+  stat = "count", vjust = -1) + ylim(-1000,30000) +
+  labs(x = "Topic", y = "Count", 
+  title = "Number of Tweets most associated with Each LSA Topic")
 ```
 
 
