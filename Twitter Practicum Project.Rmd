@@ -2,7 +2,7 @@
 title: "Untitled"
 author: "Kyle Hommes"
 date: "5/11/2018"
-output: pdf_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -45,26 +45,9 @@ my_graph=wordcloud2(demoFreq, size=1.5)
 saveWidget(my_graph,"tmp.html",selfcontained = F)
 webshot("tmp.html","wc1.png", delay =15, vwidth = 2000, vheight=2000)
 ```
-Setup Twitter API:
-```{r}
-setup_twitter_oauth(consumer_key = consumer.key, 
-  consumer_secret = consumer.secret, access_token = access.token,
-  access_secret = access.secret)
-```
 
 
 
-Pull Tweets for the following hashtags:
-
-Code for extracting the tweets is in Twitter Pulls.R. The hashtags pulled were:
-
-#mentalhealthawareness
-#anxiety
-#depression
-#ptsd
-#suicide
-```{r}
-```
 Exploratory Data Analysis:
 ```{r,error=FALSE,warning=FALSE,message=FALSE}
 wordcloud2(mhafreq.df)

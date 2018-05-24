@@ -1,3 +1,6 @@
+setup_twitter_oauth(consumer_key = consumer.key, 
+  consumer_secret = consumer.secret, access_token = access.token,
+  access_secret = access.secret)
 mentalhealthawarenesstweets <- 
   searchTwitter("#mentalhealthawareness", 
   n = 20000, since = "2018-5-1")
