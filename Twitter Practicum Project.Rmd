@@ -241,7 +241,18 @@ tweet_top_terms %>% mutate(term = reorder(term, beta)) %>%
   ggplot(aes(term, beta, fill=factor(topic))) + 
   geom_col(show.legend = FALSE) +
   facet_wrap(~ topic, scales = "free") +
-  coord_flip()
+  coord_flip() + labs(x = "Words", 
+  y = "Frequency of Use in Each Topic", 
+  title = "Top 15 Words in Each Topic")
+lda_topics <- tweet_topics %>% group_by(term) %>% summarize(beta = max(beta))
+lda_tweet_topics <- lda_topics %>% inner_join(tweet_topics)
+ggplot(lda_tweet_topics) + 
+  geom_bar(aes(x = factor(topic), fill = factor(topic)), 
+  show.legend = FALSE) + 
+  geom_text(aes( x = factor(topic), label = ..count..),
+  stat = "count", vjust = -1) + ylim(-1000,30000) +
+  labs(x = "Topic", y = "Count", 
+  title = "Number of Words most associated with Each LDA Topic")
 ```
 
 
@@ -382,42 +393,42 @@ colnames(term_top_list) <- "Topic"
 term_topics$word <- row.names(term_topics)
 term_topics <- term_topics %>% bind_cols(term_top_list)
 term_topics1 <- term_topics %>% select(TopicA,word) %>%
-  arrange(TopicA) %>% mutate(label = 1,freq = TopicA) %>%
+  arrange(desc(TopicA)) %>% mutate(label = 1,freq = TopicA) %>%
   as.data.frame()
 term_topics1 <- term_topics1[c(1:5),]
 term_topics2 <- term_topics %>% select(TopicB,word) %>%
-  arrange(TopicB) %>% mutate(label = 2,freq = TopicB) %>%
+  arrange(desc(TopicB)) %>% mutate(label = 2,freq = TopicB) %>%
   as.data.frame()
 term_topics2 <- term_topics2[c(1:5),]
 term_topics3 <- term_topics %>% select(TopicC,word) %>%
-  arrange(TopicC) %>% mutate(label = 3,freq = TopicC) %>%
+  arrange(desc(TopicC)) %>% mutate(label = 3,freq = TopicC) %>%
   as.data.frame()
 term_topics3 <- term_topics3[c(1:5),]
 term_topics4 <- term_topics %>% select(TopicD,word) %>%
-  arrange(TopicD) %>% mutate(label = 4,freq = TopicD) %>%
+  arrange(desc(TopicD)) %>% mutate(label = 4,freq = TopicD) %>%
   as.data.frame()
 term_topics4 <- term_topics4[c(1:5),]
 term_topics5 <- term_topics %>% select(TopicE,word) %>%
-  arrange(TopicE) %>% mutate(label = 5,freq = TopicE) %>%
+  arrange(desc(TopicE)) %>% mutate(label = 5,freq = TopicE) %>%
   as.data.frame()
 term_topics5 <- term_topics5[c(1:5),]
 term_topics6 <- term_topics %>% select(TopicF,word) %>%
-  arrange(TopicF) %>% mutate(label = 6,freq = TopicF) %>%
+  arrange(desc(TopicF)) %>% mutate(label = 6,freq = TopicF) %>%
   as.data.frame()
 term_topics6 <- term_topics6[c(1:5),]
 term_topics7 <- term_topics %>% select(TopicG,word) %>%
-  arrange(TopicG) %>% mutate(label = 7,freq = TopicG) %>% as.data.frame()
+  arrange(desc(TopicG)) %>% mutate(label = 7,freq = TopicG) %>% as.data.frame()
 term_topics7 <- term_topics7[c(1:5),]
 term_topics8 <- term_topics %>% select(TopicH,word) %>%
-  arrange(TopicH) %>% mutate(label = 8,freq = TopicH) %>%
+  arrange(desc(TopicH)) %>% mutate(label = 8,freq = TopicH) %>%
   as.data.frame()
 term_topics8 <- term_topics8[c(1:5),]
 term_topics9 <- term_topics %>% select(TopicI,word) %>%
-  arrange(TopicI) %>% mutate(label = 9,freq = TopicI) %>%
+  arrange(desc(TopicI)) %>% mutate(label = 9,freq = TopicI) %>%
   as.data.frame()
 term_topics9 <- term_topics9[c(1:5),]
 term_topics10 <- term_topics %>% select(TopicJ,word) %>%
-  arrange(TopicJ) %>% mutate(label = 10,freq = TopicJ) %>%
+  arrange(desc(TopicJ)) %>% mutate(label = 10,freq = TopicJ) %>%
   as.data.frame()
 term_topics10 <- term_topics10[c(1:5),]
 term_topics_tot <- bind_rows(term_topics1,term_topics2,term_topics3,
@@ -425,7 +436,7 @@ term_topics_tot <- bind_rows(term_topics1,term_topics2,term_topics3,
   term_topics9,term_topics10)
 ggplot(term_topics_tot) + geom_bar(aes(x = word, y = freq, 
   fill = factor(label)), stat = "identity", show.legend = FALSE) +
-  facet_wrap(~label,scales = "free") + 
+  facet_wrap(~label,scales = "free") +
   coord_flip() + labs(x = "Words", y = "LSA Similarity Score", 
   title = "Top 5 Words per LSA Topic")
 ```
@@ -465,21 +476,15 @@ hashtag_word_clust %>%
   title = "Top 5 words per cluster", fill = "Cluster")
 ggplot(hashtag_word_clust) + geom_bar(aes(x = factor(cluster), 
   fill = factor(cluster)), show.legend = FALSE) +
-  geom_test(aes(x = factor(cluster), label = ..count..),
+  geom_text(aes(x = factor(cluster), label = ..count..),
   stat = "count", vjust = -1) + labs(x = "Cluster", 
-  y = "Number of Tweets", title = "Number of Tweets per Cluster")
-ggplot(doc_topics) + 
-  geom_bar(aes(x = factor(Topic), fill = factor(Topic)), 
-  show.legend = FALSE) + 
-  geom_text(aes( x = factor(Topic), label = ..count..),
-  stat = "count", vjust = -1) + ylim(-1000,30000) +
-  labs(x = "Topic", y = "Count", 
-  title = "Number of Tweets most associated with Each LSA Topic")
+  y = "Number of Words", title = "Number of Words per Cluster") +
+  facet_wrap(~hashtag, scales = "free") + ylim(0, 1000)
 ```
 
 
 
 Classification:
 ```{r}
-
+totaltweet_random <- sample(totaltweet)
 ```
