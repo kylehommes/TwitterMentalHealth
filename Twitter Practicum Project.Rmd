@@ -522,6 +522,7 @@ cluster_plot
 
 Classification:
 ```{r}
+set.seed(1234)
 totaltweet_random <- sample_frac(totaltweet, 1L)
 tottxt_ran <- totaltweet_random$text
 tottxt_ran <- iconv(tottxt_ran, "latin1", "ASCII", sub = "")
