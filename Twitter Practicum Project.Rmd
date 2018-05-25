@@ -35,9 +35,9 @@ library(scatterplot3d)
 library(LSAfun)
 library(maps)
 library(cluster)
-library(kmed)
 library(NbClust)
 library(factoextra)
+library(gridExtra)
 ```
 ```{r wordcloud,include=FALSE}
 # Code to include wordcloud in .pdf knit
@@ -126,6 +126,7 @@ freq_by_rank %>%
   scale_x_log10() + scale_y_log10() + labs(x = "Rank", 
   y = "Term Frequency", 
   title = "Zipf's Plot of each Hashtag", color = "Hashtag")
+grid.arrange(cluster_plot,lda_plot,lsa_plot, nrow = 1, ncol = 3)
 ```
 Sentiment Analysis:
 ```{r,error=FALSE,message=FALSE,warning=FALSE}
@@ -229,13 +230,19 @@ tweet_top_terms %>% mutate(term = reorder(term, beta)) %>%
   title = "Top 15 Words in Each Topic")
 lda_topics <- tweet_topics %>% group_by(term) %>% summarize(beta = max(beta))
 lda_tweet_topics <- lda_topics %>% inner_join(tweet_topics)
-ggplot(lda_tweet_topics) + 
+colnames(lda_tweet_topics)[1] <- "word"
+combo <- tidytweet[,c(16,18)]
+lda_combo <- combo %>% inner_join(lda_tweet_topics)
+lda_plot <- ggplot(lda_combo) + 
   geom_bar(aes(x = factor(topic), fill = factor(topic)), 
   show.legend = FALSE) + 
   geom_text(aes( x = factor(topic), label = ..count..),
-  stat = "count", vjust = -1) + ylim(-1000,30000) +
+  stat = "count", vjust = -1) + ylim(-1000,20000) +
   labs(x = "Topic", y = "Count", 
-  title = "Number of Words most associated with Each LDA Topic")
+  title = "Number of Words most associated 
+  with Each LDA Topic by hashtag") +
+  facet_wrap(~hashtag, scales = "free")
+lda_plot
 ```
 
 
@@ -359,13 +366,29 @@ colnames(docu) <- c("TopicA", "TopicB", "TopicC", "TopicD",
   "TopicE", "TopicF", "TopicG", "TopicH", "TopicI", "TopicJ")
 doc_topics <- as.data.frame(colnames(docu)[apply(docu,1,which.max)])
 colnames(doc_topics) <- "Topic"
-ggplot(doc_topics) + 
+df.add <- data.frame(Topic = "TopicE", n = 0)
+doc_topics_count <- doc_topics %>% dplyr::count(Topic) %>%
+  as.data.frame() %>% bind_rows(df.add)
+ggplot(doc_topics_count) + 
+  geom_bar(aes(x = factor(Topic), y = n, fill = factor(Topic)), 
+  stat = "identity", show.legend = FALSE) + 
+  geom_text(aes( x = factor(Topic), y = n, label = n),
+  stat = "identity", vjust = -1) + ylim(-1000,40000) +
+  labs(x = "Topic", y = "Count", 
+  title = "Number of Tweets most associated with Each LSA Topic")
+hashtag_tweet <- data.frame(hashtag = totaltweet$hashtag)
+hashtag_tweet$Tweet <- rownames(hashtag_tweet)
+doc_topics$Tweet <- rownames(doc_topics)
+tweet_combo_lsa <- hashtag_tweet %>% inner_join(doc_topics)
+ggplot(tweet_combo_lsa) + 
   geom_bar(aes(x = factor(Topic), fill = factor(Topic)), 
   show.legend = FALSE) + 
   geom_text(aes( x = factor(Topic), label = ..count..),
-  stat = "count", vjust = -1) + ylim(-1000,30000) +
+  stat = "count", vjust = -1) + ylim(-1000,15000) +
   labs(x = "Topic", y = "Count", 
-  title = "Number of Tweets most associated with Each LSA Topic")
+  title = "Number of Tweets most associated 
+  with Each LSA Topic by Hashtag") +
+  facet_wrap(~hashtag, scales = "free")
 term_topics <- as.data.frame(totlsa_topics$tk)
 colnames(term_topics) <- c("TopicA", "TopicB", "TopicC", "TopicD",
   "TopicE", "TopicF", "TopicG", "TopicH", "TopicI", "TopicJ")
@@ -376,43 +399,44 @@ colnames(term_top_list) <- "Topic"
 term_topics$word <- row.names(term_topics)
 term_topics <- term_topics %>% bind_cols(term_top_list)
 term_topics1 <- term_topics %>% select(TopicA,word) %>%
-  arrange(desc(TopicA)) %>% mutate(label = 1,freq = TopicA) %>%
-  as.data.frame()
+  arrange(desc(TopicA)) %>% mutate(label = "TopicA",
+  freq = TopicA) %>% as.data.frame()
 term_topics1 <- term_topics1[c(1:5),]
 term_topics2 <- term_topics %>% select(TopicB,word) %>%
-  arrange(desc(TopicB)) %>% mutate(label = 2,freq = TopicB) %>%
-  as.data.frame()
+  arrange(desc(TopicB)) %>% mutate(label = "TopicB",
+  freq = TopicB) %>% as.data.frame()
 term_topics2 <- term_topics2[c(1:5),]
 term_topics3 <- term_topics %>% select(TopicC,word) %>%
-  arrange(desc(TopicC)) %>% mutate(label = 3,freq = TopicC) %>%
-  as.data.frame()
+  arrange(desc(TopicC)) %>% mutate(label = "TopicC",
+  freq = TopicC) %>% as.data.frame()
 term_topics3 <- term_topics3[c(1:5),]
 term_topics4 <- term_topics %>% select(TopicD,word) %>%
-  arrange(desc(TopicD)) %>% mutate(label = 4,freq = TopicD) %>%
-  as.data.frame()
+  arrange(desc(TopicD)) %>% mutate(label = "TopicD",
+  freq = TopicD) %>% as.data.frame()
 term_topics4 <- term_topics4[c(1:5),]
 term_topics5 <- term_topics %>% select(TopicE,word) %>%
-  arrange(desc(TopicE)) %>% mutate(label = 5,freq = TopicE) %>%
-  as.data.frame()
+  arrange(desc(TopicE)) %>% mutate(label = "TopicE",
+  freq = TopicE) %>% as.data.frame()
 term_topics5 <- term_topics5[c(1:5),]
 term_topics6 <- term_topics %>% select(TopicF,word) %>%
-  arrange(desc(TopicF)) %>% mutate(label = 6,freq = TopicF) %>%
-  as.data.frame()
+  arrange(desc(TopicF)) %>% mutate(label = "TopicF",
+  freq = TopicF) %>% as.data.frame()
 term_topics6 <- term_topics6[c(1:5),]
 term_topics7 <- term_topics %>% select(TopicG,word) %>%
-  arrange(desc(TopicG)) %>% mutate(label = 7,freq = TopicG) %>% as.data.frame()
+  arrange(desc(TopicG)) %>% mutate(label = "TopicG",
+  freq = TopicG) %>% as.data.frame()
 term_topics7 <- term_topics7[c(1:5),]
 term_topics8 <- term_topics %>% select(TopicH,word) %>%
-  arrange(desc(TopicH)) %>% mutate(label = 8,freq = TopicH) %>%
-  as.data.frame()
+  arrange(desc(TopicH)) %>% mutate(label = "TopicH",
+  freq = TopicH) %>% as.data.frame()
 term_topics8 <- term_topics8[c(1:5),]
 term_topics9 <- term_topics %>% select(TopicI,word) %>%
-  arrange(desc(TopicI)) %>% mutate(label = 9,freq = TopicI) %>%
-  as.data.frame()
+  arrange(desc(TopicI)) %>% mutate(label = "TopicI",
+  freq = TopicI) %>% as.data.frame()
 term_topics9 <- term_topics9[c(1:5),]
 term_topics10 <- term_topics %>% select(TopicJ,word) %>%
-  arrange(desc(TopicJ)) %>% mutate(label = 10,freq = TopicJ) %>%
-  as.data.frame()
+  arrange(desc(TopicJ)) %>% mutate(label = "TopicJ",
+  freq = TopicJ) %>% as.data.frame()
 term_topics10 <- term_topics10[c(1:5),]
 term_topics_tot <- bind_rows(term_topics1,term_topics2,term_topics3,
   term_topics4,term_topics5,term_topics6,term_topics7,term_topics8,
@@ -422,6 +446,33 @@ ggplot(term_topics_tot) + geom_bar(aes(x = word, y = freq,
   facet_wrap(~label,scales = "free") +
   coord_flip() + labs(x = "Words", y = "LSA Similarity Score", 
   title = "Top 5 Words per LSA Topic")
+term_topics_2 <- as.data.frame(totlsa_topics$tk)
+colnames(term_topics_2) <- c("1", "2", "3", "4", 
+  "5", "6", "7", "8", "9", "10")
+term_top_list_2 <- 
+  as.data.frame(colnames(term_topics_2)[apply(term_topics_2,
+  1,which.max)])
+colnames(term_top_list_2) <- "Topic"
+term_topics_2$word <- row.names(term_topics_2)
+term_topics_2 <- term_topics_2 %>% bind_cols(term_top_list_2)
+term_combo_lsa <- term_topics %>% inner_join(hashtag_words)
+term_combo_lsa_2 <- term_topics_2 %>% inner_join(hashtag_words)
+ggplot(term_combo_lsa) + geom_bar(aes(x = factor(Topic), 
+  fill = factor(Topic)), show.legend = FALSE) +
+  geom_text(aes(x = factor(Topic), label = ..count..),
+  stat = "count", vjust = -1) + labs(x = "LSA Topic", 
+  y = "Number of Words", 
+  title = "Number of Words most associated 
+  with each LSA topic by hashtag") +
+  facet_wrap(~hashtag, scales = "free") + ylim(0, 25)
+lsa_plot <- ggplot(term_combo_lsa_2) + geom_bar(aes(x = factor(Topic), 
+  fill = factor(Topic)), show.legend = FALSE) +
+  geom_text(aes(x = factor(Topic), label = ..count..),
+  stat = "count", vjust = -1) + labs(x = "LSA Topic", 
+  y = "Number of Words", 
+  title = "Number of Words most associated 
+  with each LSA topic by hashtag") +
+  facet_wrap(~hashtag, scales = "free") + ylim(0, 25)
 ```
 Word Associations
 ```{r}
@@ -457,17 +508,48 @@ hashtag_word_clust %>%
   facet_wrap(~cluster, ncol = 3, scales = "free") +
   coord_flip() + labs(y = "Frequency of Use", x = "Word",
   title = "Top 5 words per cluster", fill = "Cluster")
-ggplot(hashtag_word_clust) + geom_bar(aes(x = factor(cluster), 
+cluster_plot <- ggplot(hashtag_word_clust) + 
+  geom_bar(aes(x = factor(cluster), 
   fill = factor(cluster)), show.legend = FALSE) +
   geom_text(aes(x = factor(cluster), label = ..count..),
   stat = "count", vjust = -1) + labs(x = "Cluster", 
   y = "Number of Words", title = "Number of Words per Cluster") +
   facet_wrap(~hashtag, scales = "free") + ylim(0, 1000)
+cluster_plot
 ```
 
 
 
 Classification:
 ```{r}
-totaltweet_random <- sample(totaltweet)
+totaltweet_random <- sample_frac(totaltweet, 1L)
+tottxt_ran <- totaltweet_random$text
+tottxt_ran <- iconv(tottxt_ran, "latin1", "ASCII", sub = "")
+tottxt_ran <- gsub("http(s?)([^ ]*)", " ", tottxt_ran, ignore.case = T)
+tottxt_ran <- gsub("&amp", "and", tottxt_ran)
+totcorpus_ran <- VCorpus(VectorSource(tottxt_ran))
+totcorpus_ran <- tm_map(totcorpus_ran, PlainTextDocument)
+totdtm_ran <- DocumentTermMatrix(x= totcorpus_ran, control= ctrl)
+train <- totdtm_ran[1:70000,]
+train.labels <- totaltweet_random$isRetweet[1:70000]
+test <- totdtm_ran[70001:100000,]
+test.labels <- totaltweet_random$isRetweet[70001:100000]
+train <- as.data.frame(as.matrix(train))
+test <- as.data.frame(as.matrix(test))
+train.labels <- as.factor(train.labels)
+test.labels <- as.factor(test.labels)
+nb_model <- naiveBayes(train, train.labels)
+nb_pred <- predict(nb_model, test)
+table(nb_model, test.labels)
+confusionMatrix(table(nb_pred, test.labels))
+nb_cm <- confusionMatrix(table(ehr.pred, test.labels))
+svm_model <- svm(train, train.labels, kernel = "linear")
+svm_pred <- predict(svm_model, test)
+table(pred, test.labels)
+confusionMatrix(table(svm_pred, test.labels))
+svm_cm <- confusionMatrix(table(svm_pred, test.labels))
+fourfoldplot(svm_cm$table, color = c("#99CC99", "#CC6666"),
+  conf.level = 0, margin = 1, main = "Confusion Matrix")
+fourfoldplot(nb_cm$table, color = c("#CC6666", "#99CC99"),
+  conf.level = 0, margin = 1, main = "Confusion Matrix")
 ```

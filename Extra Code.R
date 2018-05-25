@@ -8,3 +8,12 @@ ggplot(doc_topics_count) +
             stat = "identity", vjust = -1) + ylim(-1000,40000) +
   labs(x = "Topic", y = "Count", 
        title = "Number of Tweets most associated with Each LSA Topic")
+
+ggplot(tweet_combo_lsa) + 
+  geom_bar(aes(x = factor(Topic), fill = factor(Topic)), 
+           show.legend = FALSE) + 
+  geom_text(aes( x = factor(Topic), label = ..count..),
+            stat = "count", vjust = -1) + ylim(-1000,40000) +
+  labs(x = "Topic", y = "Count", 
+       title = "Number of Tweets most associated 
+       with Each LSA Topic by Hashtag")
