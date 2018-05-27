@@ -16,4 +16,5 @@ ggplot(tweet_combo_lsa) +
             stat = "count", vjust = -1) + ylim(-1000,40000) +
   labs(x = "Topic", y = "Count", 
        title = "Number of Tweets most associated 
-       with Each LSA Topic by Hashtag")
+       with Each LSA Topic by Hashtag") + 
+  facet_wrap(~hashtag, scales = "free")
