@@ -9,13 +9,13 @@
 
 library(shiny)
 
-# Define UI for application that draws a histogram
+# Define UI for application
 ui <- fluidPage(
    
    # Application title
    titlePanel("Twitter Mental Health Analysis"),
    
-   # Sidebar with a slider input for number of bins 
+   # Sidebar with a slider input for number of words
    sidebarLayout(
       sidebarPanel(
           selectInput("selection", "Choose a Hashtag:",
@@ -29,14 +29,13 @@ ui <- fluidPage(
                      value = 75)
       ),
       
-      # Show a plot of the generated distribution
+      # Show a plot of the wordcloud
       mainPanel(
-         plotOutput("distPlot")
+         plotOutput("wordcloud")
       )
    )
 )
 
-# Define server logic required to draw a histogram
 server <- function(input, output) {
    reactive({
     input$update
@@ -46,15 +45,13 @@ server <- function(input, output) {
       })
     })
   }) 
-  output$distPlot <- renderPlot({
-      # generate bins based on input$bins from ui.R
+  output$wordcloud <- renderPlot({
      wordcloud_rep = repeatable(wordcloud)
      wordcloud_rep(a,b,
         max.words=input$words,colors=brewer.pal(8,"Dark2"),
-        scale=c(7,0.15),random.order=F)
+        scale=c(3,.1),random.order=F)
    })
 }
 
-# Run the application 
 shinyApp(ui = ui, server = server)
 
