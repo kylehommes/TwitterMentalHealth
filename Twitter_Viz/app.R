@@ -18,7 +18,11 @@ ui <- fluidPage(
    # Sidebar with a slider input for number of bins 
    sidebarLayout(
       sidebarPanel(
-         sliderInput("words",
+          selectInput("selection", "Choose a Hashtag:",
+                      choices = Hashtag),
+          actionButton("update", "Change"),
+          hr(), 
+        sliderInput("words",
                      "Number of Words:",
                      min = 10,
                      max = 150,
@@ -34,11 +38,20 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-   
-   output$distPlot <- renderPlot({
+   reactive({
+    input$update
+    isolate({
+      withProgress({
+      dofunc(input$selection)
+      })
+    })
+  }) 
+  output$distPlot <- renderPlot({
       # generate bins based on input$bins from ui.R
-     wordcloud(mhafreq.df$word,mhafreq.df$freq,max.words=input$words,
-        colors=brewer.pal(8,"Dark2"),scale=c(7,0.15),random.order=F)
+     wordcloud_rep = repeatable(wordcloud)
+     wordcloud_rep(a,b,
+        max.words=input$words,colors=brewer.pal(8,"Dark2"),
+        scale=c(7,0.15),random.order=F)
    })
 }
 
