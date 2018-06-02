@@ -18,10 +18,9 @@ ui <- fluidPage(
    # Sidebar with a slider input for number of words
    sidebarLayout(
       sidebarPanel(
-          selectInput("selection", "Choose a Hashtag:",
+          selectInput("selection", "Choose Hashtag:",
                       choices = Hashtag),
-          actionButton("update", "Change"),
-          hr(), 
+          hr(),
         sliderInput("words",
                      "Number of Words:",
                      min = 10,
@@ -37,20 +36,13 @@ ui <- fluidPage(
 )
 
 server <- function(input, output) {
-   reactive({
-    input$update
-    isolate({
-      withProgress({
-      dofunc(input$selection)
-      })
-    })
-  }) 
   output$wordcloud <- renderPlot({
      wordcloud_rep = repeatable(wordcloud)
-     wordcloud_rep(a,b,
+     data <- get(input$selection)
+     wordcloud_rep(data$word,data$freq,
         max.words=input$words,colors=brewer.pal(8,"Dark2"),
         scale=c(3,.1),random.order=F)
-   })
+  })
 }
 
 shinyApp(ui = ui, server = server)
