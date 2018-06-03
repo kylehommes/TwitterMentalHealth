@@ -23,3 +23,5 @@ write.csv(dfreq.df, "~/Desktop/dfreq.csv")
 write.csv(totfreq.df, "~/Desktop/totfreq.csv")
 
 mhafreq_table <- read.csv("~/Desktop/mhafreq.csv")
+
+rsconnect::deployApp("~/Desktop/Twitter Mental Health/Twitter_viz/")
