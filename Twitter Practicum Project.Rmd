@@ -44,6 +44,7 @@ library(klaR)
 library(e1071)
 library(textstem)
 library(shiny)
+library(rsconnect)
 ```
 ```{r wordcloud,include=FALSE}
 # Code to include wordcloud in .pdf knit
