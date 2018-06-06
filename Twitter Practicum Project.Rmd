@@ -57,30 +57,39 @@ webshot("tmp.html","wc1.png", delay =15, vwidth = 2000, vheight=2000)
 
 Exploratory Data Analysis:
 ```{r,error=FALSE,warning=FALSE,message=FALSE}
+# Wordclouds were made using frequency dataframes for each of the
+# hashtags using the wordcloud2 package
 wordcloud2(mhafreq.df)
 wordcloud2(afreq.df)
 wordcloud2(pfreq.df)
 wordcloud2(sfreq.df)
 wordcloud2(dfreq.df)
 wordcloud2(totfreq.df)
+# A word cloud was also created with the tradition wordcloud package for
+# the mentalhealthawareness hashtag
 wordcloud(mhafreq.df$word,mhafreq.df$freq,max.words=100,colors=brewer.pal(8,"Dark2"),scale=c(3,0.5),random.order=F)
+# Plot of retweets vs non-retweets in bar graph form
 ggplot(totaltweet) + geom_bar(aes(x = isRetweet, fill = isRetweet),
   stat = 'count') + geom_text(stat = 'count', 
   aes(x = isRetweet,label=..count..), vjust = 3) + 
   labs(x = "Retweeted Tweets", y = "Count", 
   fill = "Retweeted", 
   title = "Retweeted and Non-Retweeted\nTweets for All Hashtags")
+# Retweet plot by hashtag
 ggplot(totaltweet) + geom_bar(aes(x = isRetweet, fill = hashtag)) + 
   facet_wrap(~hashtag) + geom_text(stat = 'count',
   aes(x = isRetweet, label=..count..), vjust = 1) +
   labs(x = "Retweeted Tweets", y = "Count", fill = "Hashtag",
   title = "Retweeted and Non-Retweeted\nTweets per Hashtag")
+# Create map template and mapped the location of tweets.
 worldMap <- map_data("world")
 loc_plot <- ggplot(worldMap)
 loc_plot + geom_path(aes(x = long, y = lat, group = group)) +
   geom_point(data = location,aes(x=lon,y=lat),color="RED",
   size=.25) + labs(x = "Longitude", y = "Latitude", 
   title = "Map of Location for #mentalhealthawarness Tweets")
+# Wordcloud with traditional wordcloud package of all tweets together
+# Cleaning was done using dplyr package for this data.
 totaltweet %>%
   ungroup() %>% filter(!str_detect(text, "^RT")) %>%
   mutate(text = str_replace_all(text, replace_reg, "")) %>%
@@ -92,6 +101,7 @@ totaltweet %>%
   with(wordcloud(word, n, max.words = 100,
   colors=brewer.pal(8,"Dark2"), 
   scale=c(1.5,0.3), random.order=F))
+# Creating a dataframe with frequencies of words for each hashtag
 hashtag_words <- totaltweet %>% 
   filter(!str_detect(text, "^RT")) %>%
   mutate(text = str_replace_all(text, replace_reg, "")) %>%
@@ -100,18 +110,25 @@ hashtag_words <- totaltweet %>%
   filter(!word %in% stop_words$word,
   str_detect(word, "[a-z]")) %>% 
   dplyr::count(hashtag, word, sort = TRUE) %>% ungroup()
+# Group by hashtag in order to calcuate frequency per hashtag
 total_words <- hashtag_words %>% group_by(hashtag) %>%
   dplyr::summarize(total = sum(n))
+# Join the dataframes with left outer join
 hashtag_words <- left_join(hashtag_words,total_words)
+# Plot of word frequency per hashtag in histogram form.
 ggplot(hashtag_words, aes(n/total, fill = hashtag)) +
   geom_histogram(show.legend = FALSE) +
   xlim(NA, 0.0009) +
   facet_wrap(~hashtag, ncol = 2, scales = "free_y") +
   labs(x = "Percentage of Total Word Usage", y = "Frequency", 
   title = "Word Frequency Distribution per Hashtag")
+# Add in tf-idf values to the dataset.
 hashtag_tfidf <- hashtag_words %>% bind_tf_idf(word, hashtag, n)
+# Arrange by tf-idf score
 hashtag_tfidf <- hashtag_tfidf %>% dplyr::select(-total) %>%
   arrange(desc(tf_idf))
+# Plot of word frequencies based on tf-idf scores with top 15 words
+# for each of the hashtags
 hashtag_tfidf %>%
   arrange(desc(tf_idf)) %>%
   mutate(word = factor(word, levels = rev(unique(word)))) %>% 
@@ -124,44 +141,59 @@ hashtag_tfidf %>%
   facet_wrap(~hashtag, ncol = 2, scales = "free") +
   coord_flip() + labs(y = "Frequency of Use", x = "Word",
   title = "Most Used Words by Hashtag")
+# Create dataframe of word frequencies per hashtag for Zipf's plots
 freq_by_rank <- hashtag_words %>% 
   group_by(hashtag) %>% 
   mutate(rank = row_number(), `term frequency` = n/total)
+# Plot of word frequencies based on tf-idf scores as Zipf's plots
+# For each of the hashtags
 freq_by_rank %>% 
   ggplot(aes(rank, `term frequency`, color = hashtag)) + 
   geom_line(size = 1.1, alpha = 0.8, show.legend = TRUE) + 
   scale_x_log10() + scale_y_log10() + labs(x = "Rank", 
   y = "Term Frequency", 
   title = "Zipf's Plot of each Hashtag", color = "Hashtag")
+# Comparison plot between K-medoids clustering, LDA topic modeling
+# and LSA topic modeling.
 grid.arrange(cluster_plot,lda_plot,lsa_plot, nrow = 2, ncol = 2)
 ```
 Sentiment Analysis:
 ```{r,error=FALSE,message=FALSE,warning=FALSE}
 # Sentiment analysis code adapted from:
 # https://www.tidytextmining.com/
+# Joined bing sentiments to tidy datframe of tweets
 tweet_sentiment <- tidytweet %>%
   inner_join(get_sentiments("bing")) %>%
   dplyr::count(hashtag, index = linenumber %/% 50,sentiment) %>%
   spread(sentiment, n, fill = 0) %>%
   mutate(sentiment = positive - negative)
+# Joined nrc sentiments to tidy dataframe of tweets
 tweet_sentiment_nrc <- tidytweet %>%
   inner_join(get_sentiments("nrc")) %>%
   group_by(index = linenumber %/% 50, hashtag, sentiment) %>%
   summarize(n = n())
+# Plot of sentiment per segment values for each setiment group colored
+# by with hashtag the segments appeared in
 ggplot(tweet_sentiment_nrc) + 
   geom_bar(aes(x = index, y = n, fill = hashtag), 
   stat = "identity") + facet_wrap(~sentiment, ncol = 5)
+# Plot of negative and positive sentiment values for tweet segments in
+# each of the hashtags in order to compare sentiment values throughout
+# the tweets of each hashtag
 ggplot(tweet_sentiment,aes(index, sentiment,fill = hashtag)) +
   geom_col(show.legend = FALSE) +
   facet_wrap(~hashtag, ncol = 2, scales = "free_x")
+# Create a dataframe with counts for each bing sentiment
 bing_word_counts <- tidytweet %>%
   inner_join(get_sentiments("bing")) %>%
   dplyr::count(word, sentiment, sort = TRUE) %>%
   ungroup()
+# Create a dataframe of bing sentiment counts grouped by hashtag
 bing_word_hashtag_counts <- tidytweet %>%
   inner_join(get_sentiments("bing")) %>%
   dplyr::count(word, hashtag, sentiment, sort = TRUE) %>%
   ungroup()
+# Plot of top 15 positive and negative words
 bing_word_counts %>%
   group_by(sentiment) %>%
   top_n(15) %>%
@@ -172,6 +204,7 @@ bing_word_counts %>%
   facet_wrap(~sentiment, scales = "free_y") +
   labs(y = "Contribution to sentiment",x = NULL) +
   coord_flip()
+# Plot of top 5 positive and negative words for each hashtag
 bing_word_hashtag_counts %>%
   group_by(hashtag,sentiment) %>%
   top_n(5) %>%
@@ -182,10 +215,12 @@ bing_word_hashtag_counts %>%
   facet_wrap(~hashtag, scales = "free_y") +
   labs(y = "Contribution to sentiment",x = NULL) +
   coord_flip()
+# Dataframe with nrc sentiment counts
 bing_word_counts_nrc <- tidytweet %>%
   inner_join(get_sentiments("nrc")) %>%
   dplyr::count(word, sentiment, sort = TRUE) %>%
   ungroup()
+# Plot of top 10 words for each nrc sentiment grouping
 bing_word_counts_nrc %>%
   group_by(sentiment) %>%
   top_n(10) %>%
@@ -196,10 +231,12 @@ bing_word_counts_nrc %>%
   facet_wrap(~sentiment, scales = "free_y") +
   labs(y = "Contribution to sentiment",x = NULL) +
   coord_flip()
+# Dataframe of nrc sentient counts by hashtag
 bing_word_hashtag_counts_nrc <- tidytweet %>%
   inner_join(get_sentiments("nrc")) %>%
   dplyr::count(word, hashtag, sentiment, sort = TRUE) %>%
   ungroup()
+# Plot of top two words in each nrc sentiment for each hashtag
 bing_word_hashtag_counts_nrc %>%
   group_by(hashtag,sentiment) %>%
   top_n(2) %>%
@@ -210,6 +247,7 @@ bing_word_hashtag_counts_nrc %>%
   facet_wrap(~sentiment, scales = "free_y") +
   labs(y = "Contribution to sentiment",x = NULL) +
   coord_flip()
+# Comparison cloud with positive and negative bing sentiment words
 tidytweet %>%
   inner_join(get_sentiments("bing")) %>%
   dplyr::count(word, sentiment, sort = TRUE) %>%
@@ -222,12 +260,17 @@ tidytweet %>%
 
 Topic Modeling:
 ```{r}
+# Filtered dataset to removing empty rows
 ui = unique(totdtm$i)
 totdtm_new = totdtm[ui,]
+# Created an LDA model with 5 topics
 tweet_LDA <- LDA(totdtm_new, k=5, control = list(seed = 1234))
+# Made the LDA model into a tidy dataframe for easier preparation
 tweet_topics <- tidy(tweet_LDA, matrix = "beta")
+# Group by topic
 tweet_top_terms <- tweet_topics %>% group_by(topic) %>% 
   top_n(15, beta) %>% ungroup() %>% arrange(topic, -beta)
+# Mutate and plot top 15 words per topic
 tweet_top_terms %>% mutate(term = reorder(term, beta)) %>%
   ggplot(aes(term, beta, fill=factor(topic))) + 
   geom_col(show.legend = FALSE) +
@@ -235,11 +278,13 @@ tweet_top_terms %>% mutate(term = reorder(term, beta)) %>%
   coord_flip() + labs(x = "Words", 
   y = "Frequency of Use in Each Topic", 
   title = "Top 15 Words in Each Topic")
+# Create dataset to see how many words are in each topic
 lda_topics <- tweet_topics %>% group_by(term) %>% summarize(beta = max(beta))
 lda_tweet_topics <- lda_topics %>% inner_join(tweet_topics)
 colnames(lda_tweet_topics)[1] <- "word"
 combo <- tidytweet[,c(16,18)]
 lda_combo <- combo %>% inner_join(lda_tweet_topics)
+# Plot of words per topic for each hashtag
 lda_plot <- ggplot(lda_combo) + 
   geom_bar(aes(x = factor(topic), fill = factor(topic)), 
   show.legend = FALSE) + 
@@ -258,56 +303,77 @@ N-Grams:
 ```{r}
 # Code for n-grams was adapted from:
 # https://www.tidytextmining.com/
+# Clean the data in order to tokenize in N-Grams
 totaltweet$text <- iconv(totaltweet$text, "latin1", "ASCII", 
   sub = "")
 totaltweet$text <- gsub("http(s?)([^ ]*)", " ",
   totaltweet$text, ignore.case = T)
 totaltweet$text <- gsub("&amp", "and", totaltweet$text)
+# Create bigrams
 tweet_bigrams <- totaltweet %>% unnest_tokens(bigram, text,
   token = "ngrams", n = 2)
+# Sperate bigrams by word
 bigrams_separated <- tweet_bigrams %>% separate(bigram,
   c("word1","word2"), sep = " ")
+# Filter stopwords out of each word in the bigram
 bigrams_filtered <- bigrams_separated %>% 
   filter(!word1 %in% stop_words$word) %>%
   filter(!word2 %in% stop_words$word)
+# Create counts for each of the bigrams
 bigram_counts <- bigrams_filtered %>% 
   dplyr::count(word1, word2, sort = TRUE)
+# Unite the separated words
 bigrams_united <- bigrams_filtered %>% unite(bigram, word1,
   word2, sep = " ")
+# Find frequencies for the bigrams
 bigrams_united_freq <- bigrams_united %>% dplyr::count(bigram, sort = TRUE)
+# Create trigrams
 tweet_trigrams <- totaltweet %>% unnest_tokens(trigram, text,
   token = "ngrams", n = 3)
+# Separate the trigrams by word
 trigrams_separated <- tweet_trigrams %>% separate(trigram,
   c("word1","word2","word3"), sep = " ")
+# Filter stopwords out for each word
 trigrams_filtered <- trigrams_separated %>% 
   filter(!word1 %in% stop_words$word) %>%
   filter(!word2 %in% stop_words$word) %>%
   filter(!word3 %in% stop_words$word)
+# Get couts of trigrams
 trigram_counts <- trigrams_filtered %>% 
   dplyr::count(word1, word2, word3, sort = TRUE)
+# Unite the trigrams
 trigrams_united <- trigrams_filtered %>% unite(trigram, word1,
   word2, word3, sep = " ")
+# Find the frequency for the trigrams
 trigrams_united_freq <- trigrams_united %>% dplyr::count(trigram,
   sort = TRUE)
+# Create 4-grams
 tweet_4grams <- totaltweet %>% unnest_tokens(fourgram, text,
   token = "ngrams", n = 4)
+# Separate the 4-grams by words
 fourgrams_separated <- tweet_4grams %>% separate(fourgram,
   c("word1","word2","word3","word4"), sep = " ")
+# Filter out the stopwords from each word
 fourgrams_filtered <- fourgrams_separated %>% 
   filter(!word1 %in% stop_words$word) %>%
   filter(!word2 %in% stop_words$word) %>%
   filter(!word3 %in% stop_words$word) %>%
   filter(!word4 %in% stop_words$word)
+# Count the 4-grams
 fourgram_counts <- fourgrams_filtered %>% 
   dplyr::count(word1, word2, word3, word4, sort = TRUE)
+# Unite the 4-grams
 fourgrams_united <- fourgrams_filtered %>% unite(fourgram, word1,
   word2, word3, word4, sep = " ")
+# Find the frequency for the 4-grams
 fourgrams_united_freq <- fourgrams_united %>%
   dplyr::count(fourgram, sort = TRUE)
+# Find tf-idf values for bigrams
 bigram_tf_idf <- bigrams_united %>% 
   dplyr::count(hashtag, bigram) %>%
   bind_tf_idf(bigram, hashtag, n) %>%
   arrange(desc(tf_idf))
+# Plot top 12 bigrams for each hashtag
 bigram_tf_idf %>%
   arrange(desc(tf_idf)) %>%
   group_by(hashtag) %>%
@@ -320,10 +386,12 @@ bigram_tf_idf %>%
   coord_flip() +
   labs(y = "tf-idf of bigram to hashtag",
   x = "")
+# Find the tf-idf values for trigrams
 trigram_tf_idf <- trigrams_united %>% 
   dplyr::count(hashtag, trigram) %>%
   bind_tf_idf(trigram, hashtag, n) %>%
   arrange(desc(tf_idf))
+# Plot the top 12 trigrams for each hashtag
 trigram_tf_idf %>%
   arrange(desc(tf_idf)) %>%
   group_by(hashtag) %>%
@@ -336,10 +404,12 @@ trigram_tf_idf %>%
   coord_flip() +
   labs(y = "tf-idf of trigram to hashtag",
   x = "")
+# Find the tf-idf values for 4-grams
 fourgram_tf_idf <- fourgrams_united %>% 
   dplyr::count(hashtag, fourgram) %>%
   bind_tf_idf(fourgram, hashtag, n) %>%
   arrange(desc(tf_idf))
+# Plot the top 12 4-grams for each hashtag
 fourgram_tf_idf %>%
   arrange(desc(tf_idf)) %>%
   group_by(hashtag) %>%

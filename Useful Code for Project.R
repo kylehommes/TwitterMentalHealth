@@ -6,7 +6,7 @@ write.csv(location, "~/Desktop/location.csv")
 location <- read.csv("~/Desktop/location.csv")
 location <- location[,-1]
 
-location <- bind_rows(location, userlocation4)
+location <- bind_rows(location, userlocation7)
 
 write.csv(totaltweet, "~/Desktop/totaltweet.csv")
 write.csv(mhatweet, "~/Desktop/mhatweet.csv")

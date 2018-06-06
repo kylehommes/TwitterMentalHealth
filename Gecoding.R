@@ -1,11 +1,20 @@
+# Install the ggmap package from github
 devtools::install_github("dkahle/ggmap")
+# Register API using the kiey from Google.
 register_google(key = google.key)
+# Create dataframe from the tweets.
 mhtweets.df <- twListToDF(mentalhealthawarenesstweets)
+# Pull out the user info
 userinfo <- lookupUsers(mhtweets.df$screenName)
+# Create a dataframe with the user info
 userframe <- twListToDF(userinfo)
+# Turn the dataframe into a data table in order to remove NAs
 userframe.dt <- data.table(userframe)
 userframe.dt$location <-
   userframe.dt$location[!userframe.dt$location %in% ""]
+# Geocode the user location to get longitude and latitude.
+# Geocoding is broken into parts of the data frame becuase of the 
+# Per diem usage alotment on the Google geocoding API
 location <- geocode(userframe.dt$location[!userframe.dt$location
   %in% ""])
 

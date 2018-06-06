@@ -1,13 +1,17 @@
+# Each dataset of tweets was turned into a dataframe to help with 
+# Preparation of of the data
 mhatweet <- twListToDF(mentalhealthawarenesstweets)
 anxtweet <- twListToDF(anxietytweets)
 deptweet <- twListToDF(depressiontweets)
 ptsdtweet <- twListToDF(ptsdtweets)
 suitweet <- twListToDF(suicidetweets)
+# The sets of tweets, broken down by hashtag, were combined and labeled
+# with the hashtag they belong to for indentification in later analysis
 totaltweet <- bind_rows(mhatweet %>% mutate(hashtag = "MHA"),
-                        anxtweet %>% mutate(hashtag = "Anxiety"), deptweet %>%
-                          mutate(hashtag = "Depression"), ptsdtweet %>% 
-                          mutate(hashtag = "PTSD"), suitweet %>% 
-                          mutate(hashtag = "Suicide"))
+  anxtweet %>% mutate(hashtag = "Anxiety"), deptweet %>%
+  mutate(hashtag = "Depression"), ptsdtweet %>% 
+  mutate(hashtag = "PTSD"), suitweet %>% 
+  mutate(hashtag = "Suicide"))
 
 # Cleaned the tweets for tidy analysis with code adapted from 
 # https://www.tidytextmining.com
@@ -23,6 +27,11 @@ tidytweet <- totaltweet %>%
   filter(!word %in% stop_words$word, str_detect(word, "[a-z]"))
 
 # Cleaning process for TDM creating using tm package
+# Stemming/Lemmitization was not performed for better word presentation
+# in wordclouds and to keep the size of the files smaller.
+# After the data was cleaned and turned into Term Document Matrices
+# and Document Term Matrices, the frequency for each word was 
+# calcuated by finding the rowsums on the tdms and made into data frames
 ctrl <- list(removePunctuation= list(preserve_intra_word_dashes = T), tolower= T, stopwords= c(stopwords(kind = "en"), removeNumbers= T))
 mhatxt <- sapply(mentalhealthawarenesstweets, 
                  function(x) x$getText())
