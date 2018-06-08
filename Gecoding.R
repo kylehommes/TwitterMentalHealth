@@ -84,7 +84,7 @@ userframe.dt_a <- data.table(userframe_a)
 userframe.dt_a$location <-
   userframe.dt_a$location[!userframe.dt_a$location %in% ""]
 userlocation_a <- geocode(userframe.dt_a$location[1:500])
-userlocation1_a <- geocode(userframe.dt_a$location[2001:4000])
+userlocation1_a <- geocode(userframe.dt_a$location[501:3000])
 userlocation2 <- geocode(userframe.dt$location[4001:6000])
 userlocation3 <- geocode(userframe.dt$location[6001:8000])
 userlocation4 <- geocode(userframe.dt$location[8001:10000])
