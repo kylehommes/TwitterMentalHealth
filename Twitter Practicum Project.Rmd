@@ -425,9 +425,14 @@ fourgram_tf_idf %>%
 ```
 LSA:
 ```{r,message=FALSE,warning=FALSE,error=FALSE}
+# Remove sparse terms from the tdm
 tottdm_sparse_lsa <- removeSparseTerms(tottdm, sparse = 0.99)
+# Use tf-idf weighting on matrix
 tottdm_tfidf_lsa <- weightTfIdf(tottdm_sparse_lsa)
+# Create the LSA matrices
 totlsa_topics <- lsa(tottdm_tfidf_lsa, dims = 10)
+# Use the LSA terms matrix to find the most similar term
+# for each LSA topic
 which.max(totlsa_topics$tk[,1])
 which.max(totlsa_topics$tk[,2])
 which.max(totlsa_topics$tk[,3])
@@ -438,14 +443,22 @@ which.max(totlsa_topics$tk[,7])
 which.max(totlsa_topics$tk[,8])
 which.max(totlsa_topics$tk[,9])
 which.max(totlsa_topics$tk[,10])
+# Create a dataframe from the documents/tweets lsa matrix
 docu <- as.data.frame(totlsa_topics$dk)
+# Change column names
 colnames(docu) <- c("TopicA", "TopicB", "TopicC", "TopicD",
   "TopicE", "TopicF", "TopicG", "TopicH", "TopicI", "TopicJ")
+# Find the most relevant topic for each tweet
 doc_topics <- as.data.frame(colnames(docu)[apply(docu,1,which.max)])
+# Rename column containing most relevant topic
 colnames(doc_topics) <- "Topic"
+# Add in count of zero for Topic E for graph
+# No tweets showed Topic E as the most relevant Topic to the tweet
 df.add <- data.frame(Topic = "TopicE", n = 0)
+# Count tweets for each relevant topic and add Topic E row
 doc_topics_count <- doc_topics %>% dplyr::count(Topic) %>%
   as.data.frame() %>% bind_rows(df.add)
+# Plot the number of tweets for each topic
 ggplot(doc_topics_count) + 
   geom_bar(aes(x = factor(Topic), y = n, fill = factor(Topic)), 
   stat = "identity", show.legend = FALSE) + 

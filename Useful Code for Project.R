@@ -3,10 +3,15 @@ tweet_sentence <- data_frame(text = tottxt) %>%
 
 write.csv(location, "~/Desktop/location.csv")
 
+write.csv(location_a, "~/Desktop/anxlocation.csv")
+
 location <- read.csv("~/Desktop/location.csv")
 location <- location[,-1]
 
-location <- bind_rows(location, userlocation7)
+location <- bind_rows(location, userlocation8)
+
+location_a <- userlocation_a
+location_a <- bind_rows(location_a, userlocation1_a)
 
 write.csv(totaltweet, "~/Desktop/totaltweet.csv")
 write.csv(mhatweet, "~/Desktop/mhatweet.csv")

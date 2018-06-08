@@ -2,6 +2,10 @@
 devtools::install_github("dkahle/ggmap")
 # Register API using the kiey from Google.
 register_google(key = google.key)
+# Setup the Twitter API using the keys.
+setup_twitter_oauth(consumer_key = consumer.key, 
+  consumer_secret = consumer.secret, access_token = access.token,
+  access_secret = access.secret)
 # Create dataframe from the tweets.
 mhtweets.df <- twListToDF(mentalhealthawarenesstweets)
 # Pull out the user info
@@ -74,12 +78,12 @@ location_s <- bind_rows(userlocation_s,userlocation1_s)
 
 register_google(key = google.key)
 anxtweets.df <- twListToDF(anxietytweets)
-userinfo_a <- lookupUsers(mhtweets.df_a$screenName)
+userinfo_a <- lookupUsers(anxtweets.df$screenName)
 userframe_a <- twListToDF(userinfo_a)
 userframe.dt_a <- data.table(userframe_a)
 userframe.dt_a$location <-
   userframe.dt_a$location[!userframe.dt_a$location %in% ""]
-userlocation_a <- geocode(userframe.dt_a$location[1:2000])
+userlocation_a <- geocode(userframe.dt_a$location[1:500])
 userlocation1_a <- geocode(userframe.dt_a$location[2001:4000])
 userlocation2 <- geocode(userframe.dt$location[4001:6000])
 userlocation3 <- geocode(userframe.dt$location[6001:8000])
