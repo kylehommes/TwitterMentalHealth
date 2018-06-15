@@ -47,8 +47,8 @@ userframe_s <- twListToDF(userinfo_s)
 userframe.dt_s <- data.table(userframe)
 userframe.dt_s$location <-
   userframe.dt_s$location[!userframe.dt_s$location %in% ""]
-userlocation_s <- geocode(userframe.dt_s$location[1:2000])
-userlocation1_s <- geocode(userframe.dt_s$location[2001:4000])
+userlocation_s <- geocode(userframe.dt_s$location[1:2500])
+userlocation1_s <- geocode(userframe.dt_s$location[2501:5000])
 userlocation2_s <- geocode(userframe.dt_s$location[4001:6000])
 userlocation3 <- geocode(userframe.dt$location[6001:8000])
 userlocation4 <- geocode(userframe.dt$location[8001:10000])
@@ -59,14 +59,14 @@ userlocation8 <- geocode(userframe.dt$location[16001:17066])
 location <- bind_rows(userlocation,userlocation1)
 
 register_google(key = google.key)
-mhtweets.df <- twListToDF(mentalhealthawarenesstweets)
-userinfo <- lookupUsers(mhtweets.df$screenName)
-userframe <- twListToDF(userinfo)
-userframe.dt <- data.table(userframe)
-userframe.dt$location <-
-  userframe.dt$location[!userframe.dt$location %in% ""]
-userlocation <- geocode(userframe.dt$location[1:2000])
-userlocation1 <- geocode(userframe.dt$location[2001:4000])
+deptweets.df <- twListToDF(depressiontweets)
+userinfo_d <- lookupUsers(deptweets.df$screenName)
+userframe_d <- twListToDF(userinfo_d)
+userframe.dt_d <- data.table(userframe_d)
+userframe.dt_d$location <-
+  userframe.dt_d$location[!userframe.dt_d$location %in% ""]
+userlocation_d <- geocode(userframe.dt_d$location[1:2500])
+userlocation1_d <- geocode(userframe.dt_d$location[2501:5000])
 userlocation2 <- geocode(userframe.dt$location[4001:6000])
 userlocation3 <- geocode(userframe.dt$location[6001:8000])
 userlocation4 <- geocode(userframe.dt$location[8001:10000])
@@ -85,7 +85,7 @@ userframe.dt_a$location <-
   userframe.dt_a$location[!userframe.dt_a$location %in% ""]
 userlocation_a <- geocode(userframe.dt_a$location[1:500])
 userlocation1_a <- geocode(userframe.dt_a$location[501:3000])
-userlocation2 <- geocode(userframe.dt$location[4001:6000])
+userlocation2_a <- geocode(userframe.dt_a$location[3001:5500])
 userlocation3 <- geocode(userframe.dt$location[6001:8000])
 userlocation4 <- geocode(userframe.dt$location[8001:10000])
 userlocation5 <- geocode(userframe.dt$location[10001:12000])

@@ -5,13 +5,23 @@ write.csv(location, "~/Desktop/location.csv")
 
 write.csv(location_a, "~/Desktop/anxlocation.csv")
 
+write.csv(location_s, "~/Desktop/suilocation.csv")
+
+write.csv(location_d, "~/Desktop/deplocation.csv")
+
 location <- read.csv("~/Desktop/location.csv")
 location <- location[,-1]
 
 location <- bind_rows(location, userlocation8)
 
 location_a <- userlocation_a
-location_a <- bind_rows(location_a, userlocation1_a)
+location_a <- bind_rows(location_a, userlocation2_a)
+
+location_s <- userlocation_s
+location_s <- bind_rows(location_s, userlocation1_s)
+
+location_d <- userlocation_d
+location_d <- bind_rows(location_d, userlocation1_d)
 
 write.csv(totaltweet, "~/Desktop/totaltweet.csv")
 write.csv(mhatweet, "~/Desktop/mhatweet.csv")
@@ -29,4 +39,30 @@ write.csv(totfreq.df, "~/Desktop/totfreq.csv")
 
 mhafreq_table <- read.csv("~/Desktop/mhafreq.csv")
 
-rsconnect::deployApp("~/Desktop/Twitter Mental Health/Twitter_viz/")
+loc_plot + geom_path(aes(x = long, y = lat, group = group)) +
+  geom_point(data = location,aes(x=lon,y=lat),color="RED",
+  size=.25) + labs(x = "Longitude", y = "Latitude", 
+  title = "Map of Location for #mentalhealthawarness Tweets")
+
+loc_plot + geom_path(aes(x = long, y = lat, group = group)) +
+  geom_point(data = location_a,aes(x=lon,y=lat),color="RED",
+  size=.25) + labs(x = "Longitude", y = "Latitude", 
+  title = "Map of Location for #anxiety Tweets")
+
+loc_plot + geom_path(aes(x = long, y = lat, group = group)) +
+  geom_point(data = location_s,aes(x=lon,y=lat),color="RED",
+  size=.25) + labs(x = "Longitude", y = "Latitude", 
+  title = "Map of Location for #suicide Tweets")
+
+loc_plot + geom_path(aes(x = long, y = lat, group = group)) +
+  geom_point(data = location_d,aes(x=lon,y=lat),color="RED",
+  size=.25) + labs(x = "Longitude", y = "Latitude", 
+  title = "Map of Location for #depression Tweets")
+
+loc_plot + geom_path(aes(x = long, y = lat, group = group)) +
+  geom_point(data = location_d,aes(x=lon,y=lat),color="RED",
+  size=.25) + labs(x = "Longitude", y = "Latitude", 
+  title = "Map of Location for #depression Tweets")
+
+
+

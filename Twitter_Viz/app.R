@@ -8,6 +8,22 @@
 #
 
 library(shiny)
+library(wordcloud)
+library(ggplot2)
+library(dplyr)
+library(tm)
+library(twitteR)
+library(tidyr)
+library(factoextra)
+library(gridExtra)
+library(RColorBrewer)
+
+load("Twitter.RData")
+
+# Choices for the Input Selection
+Hashtag = list("#MentalHealthAwareness" = "m",
+  "#Anxiety" = "a","#Suicide" = "s","#Depression" = "d",
+  "#PTSD" = "p","All Hashtags" = "t")
 
 # Define UI for application
 ui <- fluidPage(
@@ -41,7 +57,7 @@ server <- function(input, output) {
      data <- get(input$selection)
      wordcloud_rep(data$word,data$freq,
         max.words=input$words,colors=brewer.pal(8,"Dark2"),
-        scale=c(3,.1),random.order=F)
+        scale=c(7,.01),random.order=F)
   })
 }
 
