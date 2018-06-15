@@ -74,4 +74,41 @@ dofunc2 <- function(x) {
     return(tt)
   }
   else print("Unknown Hashtag")
+  
+  tabPanel("Comparison Cloud", fluid = TRUE,
+           sidebarLayout(
+             sidebarPanel("Comparison of Positive and Negative
+                          Sentiment Words in Wordcloud"),
+             mainPanel(
+               plotOutput("compare")
+             )
+             )
+           )
+  output$compare <- renderPlot({
+    tidytweet %>%
+      inner_join(get_sentiments("bing")) %>%
+      dplyr::count(word, sentiment, sort = TRUE) %>%
+      acast(word ~ sentiment, value.var = "n", fill = 0) %>%
+      comparison.cloud(colors = c("#F8766D", "#00BFC4"),
+                       max.words = 100,scale=c(2,.05))
+  })
+  
+  
+  tabPanel("Topic Modeling", fluid = TRUE,
+           sidebarLayout(
+             sidebarPanel(
+               selectInput("selection_topic", "Choose Method:",
+                           choices = Topics_choice)),
+             mainPanel(
+               plotOutput("topic")
+             )
+           )
+  )
+  
+  
+  output$topic <- renderPlot({
+    topic_plot <- get(input$selection_topic)
+    print(topic_plot)
+  })
+  
 }
