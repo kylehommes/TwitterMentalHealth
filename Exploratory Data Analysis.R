@@ -8,7 +8,19 @@ wordcloud2(dfreq.df)
 wordcloud2(totfreq.df)
 # A word cloud was also created with the tradition wordcloud package for
 # the mentalhealthawareness hashtag
-wordcloud(mhafreq.df$word,mhafreq.df$freq,max.words=100,colors=brewer.pal(8,"Dark2"),scale=c(3,0.5),random.order=F)
+wordcloud(mhafreq.df$word,mhafreq.df$freq,max.words=100,
+  colors=brewer.pal(8,"Dark2"),scale=c(3,0.5),random.order=F)
+# Plot of word frequency per hashtag
+tot_word_freq <- tidytweet %>% count(word, hashtag, sort = TRUE) %>% 
+  group_by(hashtag) %>% base::as.data.frame()
+tot_word_freq %>% arrange(desc(n)) %>% group_by(hashtag) %>% 
+  top_n(15) %>% ungroup %>%
+  ggplot(aes(word, n, fill = hashtag)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "Count") +
+  facet_wrap(~hashtag, ncol = 2, scales = "free") +
+  coord_flip() + labs(y = "Frequency of Use", x = "Word",
+  title = "Most Used Words by Hashtag")
 # Plot of retweets vs non-retweets in bar graph form
 ggplot(totaltweet) + geom_bar(aes(x = isRetweet, fill = isRetweet),
   stat = 'count') + geom_text(stat = 'count', 

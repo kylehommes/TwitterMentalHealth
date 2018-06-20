@@ -69,6 +69,17 @@ wordcloud2(totfreq.df)
 # A word cloud was also created with the tradition wordcloud package for
 # the mentalhealthawareness hashtag
 wordcloud(mhafreq.df$word,mhafreq.df$freq,max.words=100,colors=brewer.pal(8,"Dark2"),scale=c(3,0.5),random.order=F)
+# Plot of word frequency per hashtag
+tot_word_freq <- tidytweet %>% count(word, hashtag, sort = TRUE) %>% 
+  group_by(hashtag) %>% base::as.data.frame()
+tot_word_freq %>% arrange(desc(n)) %>% group_by(hashtag) %>% 
+  top_n(15) %>% ungroup %>%
+  ggplot(aes(word, n, fill = hashtag)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "Count") +
+  facet_wrap(~hashtag, ncol = 2, scales = "free") +
+  coord_flip() + labs(y = "Frequency of Use", x = "Word",
+  title = "Most Used Words by Hashtag")
 # Plot of retweets vs non-retweets in bar graph form
 ggplot(totaltweet) + geom_bar(aes(x = isRetweet, fill = isRetweet),
   stat = 'count') + geom_text(stat = 'count', 
@@ -290,7 +301,7 @@ lda_plot <- ggplot(lda_combo) +
   geom_bar(aes(x = factor(topic), fill = factor(topic)), 
   show.legend = FALSE) + 
   geom_text(aes( x = factor(topic), label = ..count..),
-  stat = "count", vjust = -1) + ylim(-1000,30000) +
+  stat = "count", vjust = -1) + ylim(-1000,20000) +
   labs(x = "Topic", y = "Count", 
   title = "Number of Words most associated 
   with Each LDA Topic by hashtag") +
@@ -327,7 +338,8 @@ bigram_counts <- bigrams_filtered %>%
 bigrams_united <- bigrams_filtered %>% unite(bigram, word1,
   word2, sep = " ")
 # Find frequencies for the bigrams
-bigrams_united_freq <- bigrams_united %>% dplyr::count(bigram, sort = TRUE)
+bigrams_united_freq <- bigrams_united %>% dplyr::count(bigram, 
+  sort = TRUE)
 # Create trigrams
 tweet_trigrams <- totaltweet %>% unnest_tokens(trigram, text,
   token = "ngrams", n = 3)
@@ -424,6 +436,9 @@ fourgram_tf_idf %>%
   labs(y = "tf-idf of 4-gram to hashtag",
   x = "")
 ```
+
+
+
 LSA:
 ```{r,message=FALSE,warning=FALSE,error=FALSE}
 # Remove sparse terms from the tdm
@@ -480,7 +495,8 @@ ggplot(tweet_combo_lsa) +
   title = "Number of Tweets most associated 
   with Each LSA Topic by Hashtag") +
   facet_wrap(~hashtag, scales = "free")
-term_topics <- as.data.frame(totlsa_topics$tk)
+lsa_func <- function(x) {
+term_topics <- as.data.frame(x)
 colnames(term_topics) <- c("TopicA", "TopicB", "TopicC", "TopicD",
   "TopicE", "TopicF", "TopicG", "TopicH", "TopicI", "TopicJ")
 term_top_list <- 
@@ -532,7 +548,9 @@ term_topics10 <- term_topics10[c(1:5),]
 term_topics_tot <- bind_rows(term_topics1,term_topics2,term_topics3,
   term_topics4,term_topics5,term_topics6,term_topics7,term_topics8,
   term_topics9,term_topics10)
-ggplot(term_topics_tot) + geom_bar(aes(x = word, y = freq, 
+}
+tot_terms <- lsa_func(totlsa_topics$tk)
+ggplot(tot_terms) + geom_bar(aes(x = word, y = freq, 
   fill = factor(label)), stat = "identity", show.legend = FALSE) +
   facet_wrap(~label,scales = "free") +
   coord_flip() + labs(x = "Words", y = "LSA Similarity Score", 
@@ -566,6 +584,9 @@ lsa_plot <- ggplot(term_combo_lsa_2) + geom_bar(aes(x = factor(Topic),
   facet_wrap(~hashtag, scales = "free") + ylim(0, 30)
 lsa_plot
 ```
+
+
+
 Word Associations
 ```{r}
 
@@ -579,12 +600,10 @@ set.seed(1234)
 tottdm_sparse <- removeSparseTerms(tottdm, sparse = 0.999)
 tottdm_tfidf <- weightTfIdf(tottdm_sparse)
 totlsa_topics_clust <- lsa(tottdm_tfidf, dims = 10)
-d <- dist(t(totlsa_topics_clust$tk), method="manhattan")
-d <- data.table(d)
-fviz_nbclust(d, pam, k.max = 15, method = "wss") +
-  theme_classic() + geom_vline(xintercept = 3, linetype = 2)
+fviz_nbclust(totlsa_topics_clust$tk, pam, k.max = 50, method = "wss") +
+  theme_classic() + geom_vline(xintercept = 12, linetype = 2)
 totlsa.tk <- as.data.frame(totlsa$tk)
-totclust <- pam(totlsa.tk, 3, metric = "manhattan")
+totclust <- pam(totlsa.tk, 12, metric = "manhattan")
 head(totclust$clustering, 10)
 clusters <- as.data.frame(totclust$clustering)
 clusters$word <- row.names(clusters)
@@ -662,6 +681,12 @@ tweet_search$text <- tottxt
 docList <- as.list(tweet_search$text)
 N.docs <- length(docList)
 QrySearch <- function(queryTerm) {
+  tweet_search <- totaltweet %>% dplyr::mutate(rowIndex=
+  as.numeric(row.names(.))) %>%
+  dplyr::select(retweetCount,rowIndex,hashtag)
+  tweet_search$text <- tottxt
+  docList <- as.list(tweet_search$text)
+  N.docs <- length(docList)
   my.docs <- VectorSource(c(docList, queryTerm))
   my.corpus <- VCorpus(my.docs) %>% 
     tm_map(stemDocument) %>%

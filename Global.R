@@ -1,22 +1,34 @@
-# Libraries needed for the app
+# Libraries needed to run the app
+library(shiny)
+library(wordcloud)
+library(ggplot2)
+library(dplyr)
+library(tm)
+library(twitteR)
+library(tidyr)
+library(factoextra)
+library(gridExtra)
+library(RColorBrewer)
+library(maps)
+library(tidytext)
+library(reshape2)
 
-# Load the data
-location <- read.csv("location.csv")
-m <- read.csv("mhafreq.csv")
-a <- read.csv("~/Desktop/afreq.csv")
-s <- read.csv("~/Desktop/sfreq.csv")
-d <- read.csv("dfreq.csv")
-p <- read.csv("pfreq.csv")
-t <- read.csv("totfreq.csv")
-mhatweet <- read.csv("mhatweet.csv")
-anxtweet <- read.csv("anxtweet.csv")
-suitweet <- read.csv("mhatweet.csv")
-ptsdtweet <- read.csv("anxtweet.csv")
-deptweet <- read.csv("mhatweet.csv")
-totaltweet <- read.csv("anxtweet.csv")
+# Set up the environment for the app
+load("Twitter.RData")
 
 # Choices for the Input Selection
 Hashtag = list("#MentalHealthAwareness" = "m",
-  "#Anxiety" = "a","#Suicide" = "s","#Depression" = "d",
-  "#PTSD" = "p","All Hashtags" = "t")
+               "#Anxiety" = "a","#Suicide" = "s","#Depression" = "d",
+               "#PTSD" = "p","All Hashtags" = "t")
+
+Sent_choice = list("Postive/Negative Sentiment Segments Plot" = 
+                     "bing_seg_plot","Most Frequent Sentiment Words Plot" = "bing_plot", 
+                   "Positive/Negative Sentiment by Hashtag" = "bing_hashtag_plot", 
+                   "Sentiment Groups Most Frequent Words Plot" = "nrc_plot",
+                   "Sentiment Groups by Hashtag" = "nrc_hashtag_plot")
+
+Topics_choice = list("LDA Topics" = "lda_plot", 
+                     "LSA Topics" = "lsa_plot", "Cluster Topics" = "cluster_plot",
+                     "Bigrams" = "bigram_plot", "Trigrams" = "trigram_plot", 
+                     "4-grams" = "fourgram_plot")
 

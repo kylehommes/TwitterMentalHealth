@@ -69,9 +69,9 @@ loc_plot + geom_path(aes(x = long, y = lat, group = group)) +
   title = "Map of Location for #depression Tweets")
 
 loc_plot + geom_path(aes(x = long, y = lat, group = group)) +
-  geom_point(data = location_d,aes(x=lon,y=lat),color="RED",
+  geom_point(data = location_p,aes(x=lon,y=lat),color="RED",
   size=.25) + labs(x = "Longitude", y = "Latitude", 
-  title = "Map of Location for #depression Tweets")
+  title = "Map of Location for #ptsd Tweets")
 
 worldMap <- map_data("world")
 loc_plot <- ggplot(worldMap)
