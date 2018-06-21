@@ -1,8 +1,8 @@
 # Filtered dataset to removing empty rows
 ui = unique(totdtm$i)
 totdtm_new = totdtm[ui,]
-# Created an LDA model with 5 topics
-tweet_LDA <- LDA(totdtm_new, k=5, control = list(seed = 1234))
+# Created an LDA model with 10 topics
+tweet_LDA <- LDA(totdtm_new, k=10, control = list(seed = 1234))
 # Made the LDA model into a tidy dataframe for easier preparation
 tweet_topics <- tidy(tweet_LDA, matrix = "beta")
 # Group by topic
@@ -37,8 +37,8 @@ lda_plot
 # Filtered dataset to removing empty rows
 ui = unique(mhadtm$i)
 mhadtm_new = mhadtm[ui,]
-# Created an LDA model with 5 topics
-mha_tweet_LDA <- LDA(mhadtm_new, k=5, control = list(seed = 1234))
+# Created an LDA model with 10 topics
+mha_tweet_LDA <- LDA(mhadtm_new, k=10, control = list(seed = 1234))
 # Made the LDA model into a tidy dataframe for easier preparation
 mha_tweet_topics <- tidy(mha_tweet_LDA, matrix = "beta")
 # Group by topic
@@ -73,8 +73,8 @@ mha_lda_plot
 # Filtered dataset to removing empty rows
 ui = unique(sdtm$i)
 suidtm_new = sdtm[ui,]
-# Created an LDA model with 5 topics
-sui_tweet_LDA <- LDA(suidtm_new, k=5, control = list(seed = 1234))
+# Created an LDA model with 10 topics
+sui_tweet_LDA <- LDA(suidtm_new, k=10, control = list(seed = 1234))
 # Made the LDA model into a tidy dataframe for easier preparation
 sui_tweet_topics <- tidy(sui_tweet_LDA, matrix = "beta")
 # Group by topic
@@ -110,8 +110,8 @@ sui_lda_plot
 # Filtered dataset to removing empty rows
 ui = unique(ddtm$i)
 depdtm_new = ddtm[ui,]
-# Created an LDA model with 5 topics
-dep_tweet_LDA <- LDA(depdtm_new, k=5, control = list(seed = 1234))
+# Created an LDA model with 10 topics
+dep_tweet_LDA <- LDA(depdtm_new, k=10, control = list(seed = 1234))
 # Made the LDA model into a tidy dataframe for easier preparation
 dep_tweet_topics <- tidy(dep_tweet_LDA, matrix = "beta")
 # Group by topic
@@ -147,8 +147,8 @@ dep_lda_plot
 # Filtered dataset to removing empty rows
 ui = unique(adtm$i)
 anxdtm_new = adtm[ui,]
-# Created an LDA model with 5 topics
-anx_tweet_LDA <- LDA(anxdtm_new, k=5, control = list(seed = 1234))
+# Created an LDA model with 10 topics
+anx_tweet_LDA <- LDA(anxdtm_new, k=10, control = list(seed = 1234))
 # Made the LDA model into a tidy dataframe for easier preparation
 anx_tweet_topics <- tidy(anx_tweet_LDA, matrix = "beta")
 # Group by topic
@@ -184,8 +184,8 @@ anx_lda_plot
 # Filtered dataset to removing empty rows
 ui = unique(pdtm$i)
 ptsddtm_new = pdtm[ui,]
-# Created an LDA model with 5 topics
-ptsd_tweet_LDA <- LDA(ptsddtm_new, k=5, control = list(seed = 1234))
+# Created an LDA model with 10 topics
+ptsd_tweet_LDA <- LDA(ptsddtm_new, k=10, control = list(seed = 1234))
 # Made the LDA model into a tidy dataframe for easier preparation
 ptsd_tweet_topics <- tidy(ptsd_tweet_LDA, matrix = "beta")
 # Group by topic

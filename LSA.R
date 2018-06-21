@@ -1,3 +1,15 @@
+# Libraries Needed for analysis
+library(dplyr)
+library(tm)
+library(stringr)
+library(lsa)
+library(LSAfun)
+library(ggplot2)
+library(RColorBrewer)
+library(reshape2)
+library(tidyr)
+library(tidytext)
+
 # Set seed
 set.seed(1234)
 
@@ -156,8 +168,9 @@ doc_topics_mha <- as.data.frame(colnames(docu_mha)[apply(docu_mha,1,
   which.max)])
 colnames(doc_topics_mha) <- "Topic"
 df.add_mha <- data.frame(Topic = "TopicB", n = 0)
+df.add_mha_1 <- data.frame(Topic = "TopicA", n = 0)
 doc_topics_count_mha <- doc_topics_mha %>% dplyr::count(Topic) %>%
-  as.data.frame() %>% bind_rows(df.add_mha)
+  as.data.frame() %>% bind_rows(df.add_mha) %>% bind_rows(df.add_mha_1)
 ggplot(doc_topics_count_mha) + 
   geom_bar(aes(x = factor(Topic), y = n, fill = factor(Topic)), 
   stat = "identity", show.legend = FALSE) + 

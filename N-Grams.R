@@ -1,5 +1,14 @@
 # Code for n-grams was adapted from:
 # https://www.tidytextmining.com/
+
+#Libraries needed
+library(tidyr)
+library(dplyr)
+library(tidytext)
+library(ggplot2)
+library(reshape2)
+library(RColorBrewer)
+
 # Clean the data in order to tokenize in N-Grams
 totaltweet$text <- iconv(totaltweet$text, "latin1", "ASCII", 
   sub = "")

@@ -1,4 +1,5 @@
 # TwitterMentalHealth
+
 Analysis of mental health awareness tweets during Mental Health Awareness Month using R
 
 # Project Overview
@@ -13,4 +14,14 @@ May is mental health month and this often means an increase in postings about me
 
 were collected and analyzed using R in order to better understand how mental health issues are communicated on Twitter.
 
-# Exploratory Data Analysis
+# Shiny Apps
+
+Link for the Visualization Shiny App:
+
+Link for the Search Shiny App:
+
+# Blog
+
+https://twittermentalhealth.wordpress.com
+
+# Video Presentation
