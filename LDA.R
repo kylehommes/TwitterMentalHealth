@@ -27,7 +27,7 @@ lda_plot <- ggplot(lda_combo) +
   geom_bar(aes(x = factor(topic), fill = factor(topic)), 
   show.legend = FALSE) + 
   geom_text(aes( x = factor(topic), label = ..count..),
-  stat = "count", vjust = -1) + ylim(-1000,20000) +
+  stat = "count", vjust = -1) + ylim(-100,10000) +
   labs(x = "Topic", y = "Count", 
   title = "Number of Words most associated 
   with Each LDA Topic by hashtag") +
