@@ -11,7 +11,7 @@ clusters <- as.data.frame(totclust$clustering)
 clusters$word <- row.names(clusters)
 colnames(clusters) <- c("cluster", "word")
 hashtag_word_clust <- hashtag_words %>% inner_join(clusters)
-hashtag_word_clust %>%
+tot_clust_words_plot <- hashtag_word_clust %>%
   group_by(cluster) %>% 
   top_n(10, n) %>% 
   ungroup %>%
@@ -21,6 +21,7 @@ hashtag_word_clust %>%
   facet_wrap(~cluster, ncol = 3, scales = "free") +
   coord_flip() + labs(y = "Frequency of Use", x = "Word",
   title = "Top 5 words per cluster", fill = "Cluster")
+tot_clust_words_plot
 cluster_plot <- ggplot(hashtag_word_clust) + 
   geom_bar(aes(x = factor(cluster), 
   fill = factor(cluster)), show.legend = FALSE) +
@@ -44,7 +45,7 @@ mha_clusters$word <- row.names(mha_clusters)
 colnames(mha_clusters) <- c("cluster", "word")
 mha_hashtag_word_clust <- hashtag_words %>% filter(hashtag == "MHA") %>%
   inner_join(mha_clusters)
-mha_hashtag_word_clust %>%
+mha_clust_words_plot <- mha_hashtag_word_clust %>%
   group_by(cluster) %>% 
   top_n(10, n) %>% 
   ungroup %>%
@@ -55,6 +56,7 @@ mha_hashtag_word_clust %>%
   coord_flip() + labs(y = "Frequency of Use", x = "Word",
   title = "Top 5 words per cluster in #mentalhealthawareness", 
   fill = "Cluster")
+mha_clust_words_plot
 mha_cluster_plot <- ggplot(mha_hashtag_word_clust) + 
   geom_bar(aes(x = factor(cluster), 
   fill = factor(cluster)), show.legend = FALSE) +
@@ -78,7 +80,7 @@ anx_clusters$word <- row.names(anx_clusters)
 colnames(anx_clusters) <- c("cluster", "word")
 anx_hashtag_word_clust <- hashtag_words %>% filter(hashtag == "Anxiety") %>% 
   inner_join(anx_clusters)
-anx_hashtag_word_clust %>%
+anx_clust_words_plot <- anx_hashtag_word_clust %>%
   group_by(cluster) %>% 
   top_n(10, n) %>% 
   ungroup %>%
@@ -89,6 +91,7 @@ anx_hashtag_word_clust %>%
   coord_flip() + labs(y = "Frequency of Use", x = "Word",
   title = "Top 5 words per cluster in #anxiety", 
   fill = "Cluster")
+anx_clust_words_plot
 anx_cluster_plot <- ggplot(anx_hashtag_word_clust) + 
   geom_bar(aes(x = factor(cluster), 
   fill = factor(cluster)), show.legend = FALSE) +
@@ -112,7 +115,7 @@ dep_clusters$word <- row.names(dep_clusters)
 colnames(dep_clusters) <- c("cluster", "word")
 dep_hashtag_word_clust <- hashtag_words %>% filter(hashtag == "Depression") %>%
   inner_join(dep_clusters)
-dep_hashtag_word_clust %>%
+dep_clust_words_plot <- dep_hashtag_word_clust %>%
   group_by(cluster) %>% 
   top_n(10, n) %>% 
   ungroup %>%
@@ -121,7 +124,8 @@ dep_hashtag_word_clust %>%
   labs(x = NULL, y = "tf-idf") +
   facet_wrap(~cluster, ncol = 3, scales = "free") +
   coord_flip() + labs(y = "Frequency of Use", x = "Word",
-  title = "Top 5 words per cluster", fill = "Cluster")
+  title = "Top 5 words per cluster in #depression", fill = "Cluster")
+dep_clust_words_plot
 dep_cluster_plot <- ggplot(dep_hashtag_word_clust) + 
   geom_bar(aes(x = factor(cluster), 
   fill = factor(cluster)), show.legend = FALSE) +
@@ -145,7 +149,7 @@ ptsd_clusters$word <- row.names(ptsd_clusters)
 colnames(ptsd_clusters) <- c("cluster", "word")
 ptsd_hashtag_word_clust <- hashtag_words %>% filter(hashtag == "PTSD") %>% 
   inner_join(ptsd_clusters)
-ptsd_hashtag_word_clust %>%
+ptsd_clust_words_plot <- ptsd_hashtag_word_clust %>%
   group_by(cluster) %>% 
   top_n(10, n) %>% 
   ungroup %>%
@@ -156,6 +160,7 @@ ptsd_hashtag_word_clust %>%
   coord_flip() + labs(y = "Frequency of Use", x = "Word",
   title = "Top 5 words per cluster in #ptsd", 
   fill = "Cluster")
+ptsd_clust_words_plot
 ptsd_cluster_plot <- ggplot(ptsd_hashtag_word_clust) + 
   geom_bar(aes(x = factor(cluster), 
   fill = factor(cluster)), show.legend = FALSE) +
@@ -179,7 +184,7 @@ sui_clusters$word <- row.names(sui_clusters)
 colnames(sui_clusters) <- c("cluster", "word")
 sui_hashtag_word_clust <- hashtag_words %>% filter(hashtag == "Suicide") %>%
   inner_join(sui_clusters)
-sui_hashtag_word_clust %>%
+sui_clust_words_plot <- sui_hashtag_word_clust %>%
   group_by(cluster) %>% 
   top_n(10, n) %>% 
   ungroup %>%
@@ -190,6 +195,7 @@ sui_hashtag_word_clust %>%
   coord_flip() + labs(y = "Frequency of Use", x = "Word",
   title = "Top 5 words per cluster in #suicide", 
   fill = "Cluster")
+sui_clust_words_plot
 sui_cluster_plot <- ggplot(sui_hashtag_word_clust) + 
   geom_bar(aes(x = factor(cluster), 
   fill = factor(cluster)), show.legend = FALSE) +

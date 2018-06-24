@@ -17,11 +17,15 @@ were collected and analyzed using R in order to better understand how mental hea
 # Shiny Apps
 
 Link for the Visualization Shiny App:
+https://twittermentalhealth.shinyapps.io/viz_app/
 
 Link for the Search Shiny App:
+https://twittersearch.shinyapps.io/search_app/
 
 # Blog
 
 https://twittermentalhealth.wordpress.com
 
 # Video Presentation
+
+https://youtu.be/ao6EjhFXoLg

@@ -124,11 +124,12 @@ ggplot(tweet_combo_lsa) +
   with Each LSA Topic by Hashtag") +
   facet_wrap(~hashtag, scales = "free")
 tot_terms <- lsa_func(totlsa_topics$tk)
-ggplot(tot_terms) + geom_bar(aes(x = word, y = freq, 
+tot_lsa_words_plot <- ggplot(tot_terms) + geom_bar(aes(x = word, y = freq, 
   fill = factor(label)), stat = "identity", show.legend = FALSE) +
   facet_wrap(~label,scales = "free") +
   coord_flip() + labs(x = "Words", y = "LSA Similarity Score", 
   title = "Top 5 Words per LSA Topic")
+tot_lsa_words_plot
 term_topics_2 <- as.data.frame(totlsa_topics$tk)
 colnames(term_topics_2) <- c("1", "2", "3", "4", 
   "5", "6", "7", "8", "9", "10")
@@ -140,7 +141,7 @@ term_topics_2$word <- row.names(term_topics_2)
 term_topics_2 <- term_topics_2 %>% bind_cols(term_top_list_2)
 term_combo_lsa <- term_topics %>% inner_join(hashtag_words)
 term_combo_lsa_2 <- term_topics_2 %>% inner_join(hashtag_words)
-ggplot(term_combo_lsa) + geom_bar(aes(x = factor(Topic), 
+lsa_plot <- ggplot(term_combo_lsa) + geom_bar(aes(x = factor(Topic), 
   fill = factor(Topic)), show.legend = FALSE) +
   geom_text(aes(x = factor(Topic), label = ..count..),
   stat = "count", vjust = -1) + labs(x = "LSA Topic", 
@@ -148,7 +149,8 @@ ggplot(term_combo_lsa) + geom_bar(aes(x = factor(Topic),
   title = "Number of Words most associated 
   with each LSA topic per hashtag") +
   facet_wrap(~hashtag, scales = "free") + ylim(0, 25)
-lsa_plot <- ggplot(term_combo_lsa_2) + geom_bar(aes(x = factor(Topic), 
+lsa_plot
+lsa_plot_2 <- ggplot(term_combo_lsa_2) + geom_bar(aes(x = factor(Topic), 
   fill = factor(Topic)), show.legend = FALSE) +
   geom_text(aes(x = factor(Topic), label = ..count..),
   stat = "count", vjust = -1) + labs(x = "LSA Topic", 
@@ -156,7 +158,7 @@ lsa_plot <- ggplot(term_combo_lsa_2) + geom_bar(aes(x = factor(Topic),
   title = "Number of Words most associated 
   with each LSA topic by hashtag") +
   facet_wrap(~hashtag, scales = "free") + ylim(0, 30)
-lsa_plot
+lsa_plot_2
 
 mhatdm_sparse_lsa <- removeSparseTerms(mhatdm, sparse = 0.99)
 mhatdm_tfidf_lsa <- weightTfIdf(mhatdm_sparse_lsa)
@@ -180,11 +182,12 @@ ggplot(doc_topics_count_mha) +
   title = "Number of Tweets most associated with Each 
   LSA Topic for #mentalhealthawarness")
 mha_lsa_term <- lsa_func(mhalsa_topics$tk)
-ggplot(mha_lsa_term) + geom_bar(aes(x = word, y = freq, 
+mha_lsa_plot <- ggplot(mha_lsa_term) + geom_bar(aes(x = word, y = freq, 
   fill = factor(label)), stat = "identity", show.legend = FALSE) +
   facet_wrap(~label,scales = "free") +
   coord_flip() + labs(x = "Words", y = "LSA Similarity Score", 
   title = "Top 5 Words per LSA Topic for #mentalhealthawareness")
+mha_lsa_plot
 
 anxtdm_sparse_lsa <- removeSparseTerms(atdm, sparse = 0.99)
 anxtdm_tfidf_lsa <- weightTfIdf(anxtdm_sparse_lsa)
@@ -206,11 +209,12 @@ ggplot(doc_topics_count_anx) +
   title = "Number of Tweets most associated with Each 
   LSA Topic for #anxiety")
 anx_lsa_term <- lsa_func(anxlsa_topics$tk)
-ggplot(anx_lsa_term) + geom_bar(aes(x = word, y = freq, 
+anx_lsa_plot <- ggplot(anx_lsa_term) + geom_bar(aes(x = word, y = freq, 
   fill = factor(label)), stat = "identity", show.legend = FALSE) +
   facet_wrap(~label,scales = "free") +
   coord_flip() + labs(x = "Words", y = "LSA Similarity Score", 
   title = "Top 5 Words per LSA Topic for #anxiety")
+anx_lsa_plot
 
 ptsdtdm_sparse_lsa <- removeSparseTerms(ptdm, sparse = 0.99)
 ptsdtdm_tfidf_lsa <- weightTfIdf(ptsdtdm_sparse_lsa)
@@ -233,11 +237,12 @@ ggplot(doc_topics_count_ptsd) +
   title = "Number of Tweets most associated with Each 
   LSA Topic for #ptsd")
 ptsd_lsa_term <- lsa_func(ptsdlsa_topics$tk)
-ggplot(ptsd_lsa_term) + geom_bar(aes(x = word, y = freq, 
+ptsd_lsa_plot <- ggplot(ptsd_lsa_term) + geom_bar(aes(x = word, y = freq, 
   fill = factor(label)), stat = "identity", show.legend = FALSE) +
   facet_wrap(~label,scales = "free") +
   coord_flip() + labs(x = "Words", y = "LSA Similarity Score", 
   title = "Top 5 Words per LSA Topic for #ptsd")
+ptsd_lsa_plot
 
 deptdm_sparse_lsa <- removeSparseTerms(dtdm, sparse = 0.99)
 deptdm_tfidf_lsa <- weightTfIdf(deptdm_sparse_lsa)
@@ -259,11 +264,12 @@ ggplot(doc_topics_count_dep) +
   title = "Number of Tweets most associated with Each 
   LSA Topic for #depression")
 dep_lsa_term <- lsa_func(deplsa_topics$tk)
-ggplot(dep_lsa_term) + geom_bar(aes(x = word, y = freq, 
+dep_lsa_plot <- ggplot(dep_lsa_term) + geom_bar(aes(x = word, y = freq, 
   fill = factor(label)), stat = "identity", show.legend = FALSE) +
   facet_wrap(~label,scales = "free") +
   coord_flip() + labs(x = "Words", y = "LSA Similarity Score", 
   title = "Top 5 Words per LSA Topic for #depression")
+dep_lsa_plot
 
 suitdm_sparse_lsa <- removeSparseTerms(stdm, sparse = 0.99)
 suitdm_tfidf_lsa <- weightTfIdf(suitdm_sparse_lsa)
@@ -286,8 +292,9 @@ ggplot(doc_topics_count_sui) +
   title = "Number of Tweets most associated with Each 
   LSA Topic for #suicide")
 sui_lsa_term <- lsa_func(suilsa_topics$tk)
-ggplot(sui_lsa_term) + geom_bar(aes(x = word, y = freq, 
+sui_lsa_plot <- ggplot(sui_lsa_term) + geom_bar(aes(x = word, y = freq, 
   fill = factor(label)), stat = "identity", show.legend = FALSE) +
   facet_wrap(~label,scales = "free") +
   coord_flip() + labs(x = "Words", y = "LSA Similarity Score", 
   title = "Top 5 Words per LSA Topic for #suicide")
+sui_lsa_plot

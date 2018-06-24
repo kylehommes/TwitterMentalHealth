@@ -1,3 +1,12 @@
+# Define variables
+tweet_search <- totaltweet %>% dplyr::mutate(rowIndex=
+  as.numeric(row.names(.))) %>%
+  dplyr::select(retweetCount,rowIndex,hashtag)
+tweet_search$text <- tottxt
+docList <- as.list(tweet_search$text)
+N.docs <- length(docList)
+
+# Function for searching documents for where words are used in Tweets
 QrySearch <- function(queryTerm) {
   my.docs <- VectorSource(c(docList, queryTerm))
   my.corpus <- VCorpus(my.docs) %>% 
