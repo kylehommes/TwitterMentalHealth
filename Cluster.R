@@ -1,16 +1,38 @@
+# Libraries needed for analysis
+library(tm)
+library(dplyr)
+library(stringr)
+library(NbClust)
+library(lsa)
+library(cluster)
+library(factoextra)
+library(ggplot2)
+library(reshape2)
+library(RColorBrewer)
+
+# Clustering with All Hashtags
+# Set seed
 set.seed(1234)
+# Remove sparse terms and weeight as tf-idf
 tottdm_sparse <- removeSparseTerms(tottdm, sparse = 0.999)
 tottdm_tfidf <- weightTfIdf(tottdm_sparse)
+# Create LSA matrices to improve clustering
 totlsa_topics_clust <- lsa(tottdm_tfidf, dims = 10)
+# Use elbow plot to determine the optimal number of clusters
 fviz_nbclust(totlsa_topics_clust$tk, pam, k.max = 50, method = "wss") +
   theme_classic() + geom_vline(xintercept = 12, linetype = 2)
+# Create data frame using LSA terms matrix
 totlsa.tk <- as.data.frame(totlsa_topics_clust$tk)
+# Cluster with K-Medoids(PAM algorithm) using manhattan distance
 totclust <- pam(totlsa.tk, 12, metric = "manhattan")
+# Inspect clusters
 head(totclust$clustering, 10)
+# Create dataframe with clusters and words in it
 clusters <- as.data.frame(totclust$clustering)
 clusters$word <- row.names(clusters)
 colnames(clusters) <- c("cluster", "word")
 hashtag_word_clust <- hashtag_words %>% inner_join(clusters)
+# Plot the clusters and words
 tot_clust_words_plot <- hashtag_word_clust %>%
   group_by(cluster) %>% 
   top_n(10, n) %>% 
@@ -21,6 +43,7 @@ tot_clust_words_plot <- hashtag_word_clust %>%
   facet_wrap(~cluster, ncol = 3, scales = "free") +
   coord_flip() + labs(y = "Frequency of Use", x = "Word",
   title = "Top 5 words per cluster", fill = "Cluster")
+# Plot number of words per cluster
 tot_clust_words_plot
 cluster_plot <- ggplot(hashtag_word_clust) + 
   geom_bar(aes(x = factor(cluster), 
@@ -31,7 +54,7 @@ cluster_plot <- ggplot(hashtag_word_clust) +
   facet_wrap(~hashtag, scales = "free") + ylim(0, 1000)
 cluster_plot
 
-set.seed(1234)
+# Repeat steps from above with each of the hashtags
 mhatdm_sparse <- removeSparseTerms(mhatdm, sparse = 0.999)
 mhatdm_tfidf <- weightTfIdf(mhatdm_sparse)
 mhalsa_topics_clust <- lsa(mhatdm_tfidf, dims = 10)
@@ -66,7 +89,6 @@ mha_cluster_plot <- ggplot(mha_hashtag_word_clust) +
   in #mentalhealthawareness") + ylim(0, 2500)
 mha_cluster_plot
 
-set.seed(1234)
 anxtdm_sparse <- removeSparseTerms(atdm, sparse = 0.999)
 anxtdm_tfidf <- weightTfIdf(anxtdm_sparse)
 anxlsa_topics_clust <- lsa(anxtdm_tfidf, dims = 10)
@@ -101,7 +123,6 @@ anx_cluster_plot <- ggplot(anx_hashtag_word_clust) +
   in #anxiety") + ylim(0, 2500)
 anx_cluster_plot
 
-set.seed(1234)
 deptdm_sparse <- removeSparseTerms(dtdm, sparse = 0.999)
 deptdm_tfidf <- weightTfIdf(deptdm_sparse)
 deplsa_topics_clust <- lsa(mhatdm_tfidf, dims = 10)
@@ -135,7 +156,6 @@ dep_cluster_plot <- ggplot(dep_hashtag_word_clust) +
   in #depression") + ylim(0, 2500)
 dep_cluster_plot
 
-set.seed(1234)
 ptsdtdm_sparse <- removeSparseTerms(ptdm, sparse = 0.999)
 ptsdtdm_tfidf <- weightTfIdf(ptsdtdm_sparse)
 ptsdlsa_topics_clust <- lsa(ptsdtdm_tfidf, dims = 10)
@@ -170,7 +190,6 @@ ptsd_cluster_plot <- ggplot(ptsd_hashtag_word_clust) +
   in #ptsd") + ylim(0, 2500)
 ptsd_cluster_plot
 
-set.seed(1234)
 suitdm_sparse <- removeSparseTerms(stdm, sparse = 0.999)
 suitdm_tfidf <- weightTfIdf(suitdm_sparse)
 suilsa_topics_clust <- lsa(suitdm_tfidf, dims = 10)
