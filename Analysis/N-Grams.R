@@ -37,6 +37,7 @@ bigrams_united_freq <- bigrams_united %>% dplyr::count(bigram,
 # Create trigrams
 tweet_trigrams <- totaltweet %>% unnest_tokens(trigram, text,
   token = "ngrams", n = 3)
+
 # Separate the trigrams by word
 trigrams_separated <- tweet_trigrams %>% separate(trigram,
   c("word1","word2","word3"), sep = " ")
@@ -75,6 +76,7 @@ fourgrams_united <- fourgrams_filtered %>% unite(fourgram, word1,
 # Find the frequency for the 4-grams
 fourgrams_united_freq <- fourgrams_united %>%
   dplyr::count(fourgram, sort = TRUE)
+
 # Find tf-idf values for bigrams
 bigram_tf_idf <- bigrams_united %>% 
   dplyr::count(hashtag, bigram) %>%
@@ -109,6 +111,7 @@ trigram_tf_idf %>%
   facet_wrap(~ hashtag, ncol = 2, scales = "free") +
   coord_flip() +
   labs(y = "tf-idf of trigram to hashtag", x = "")
+
 # Find the tf-idf values for 4-grams
 fourgram_tf_idf <- fourgrams_united %>% 
   dplyr::count(hashtag, fourgram) %>%
