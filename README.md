@@ -16,6 +16,12 @@ were collected and analyzed using R in order to better understand how mental hea
 
 ![Comparison Cloud](https://github.com/kylehommes/TwitterMentalHealth/blob/master/Images/Comparison_Cloud.png)
 
+![Sentiment](https://github.com/kylehommes/TwitterMentalHealth/blob/master/Images/Sentiment.png)
+
+![Wordcloud](https://github.com/kylehommes/TwitterMentalHealth/blob/master/Images/Wordcloud.png)
+
+![Sentiment Groups](https://github.com/kylehommes/TwitterMentalHealth/blob/master/Images/Sentiment_Groups.png)
+
 # Shiny Apps
 
 Link for the Visualization Shiny App:
