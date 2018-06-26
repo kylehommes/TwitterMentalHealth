@@ -14,6 +14,8 @@ May is mental health month and this often means an increase in postings about me
 
 were collected and analyzed using R in order to better understand how mental health issues are communicated on Twitter.
 
+# Visualizations for the Analysis
+
 ![Comparison Cloud](https://github.com/kylehommes/TwitterMentalHealth/blob/master/Images/Comparison_Cloud.png)
 
 ![Sentiment](https://github.com/kylehommes/TwitterMentalHealth/blob/master/Images/Sentiment.png)
