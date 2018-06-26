@@ -17,97 +17,37 @@ userframe.dt <- data.table(userframe)
 userframe.dt$location <-
   userframe.dt$location[!userframe.dt$location %in% ""]
 # Geocode the user location to get longitude and latitude.
-# Geocoding is broken into parts of the data frame becuase of the 
-# Per diem usage alotment on the Google geocoding API
-location <- geocode(userframe.dt$location[!userframe.dt$location
-  %in% ""])
+location <- geocode(userframe.dt$location)
 
-register_google(key = google.key)
-mhtweets.df <- twListToDF(mentalhealthawarenesstweets)
-userinfo <- lookupUsers(mhtweets.df$screenName)
-userframe <- twListToDF(userinfo)
-userframe.dt <- data.table(userframe)
-userframe.dt$location <-
-  userframe.dt$location[!userframe.dt$location %in% ""]
-userlocation <- geocode(userframe.dt$location[1:2000])
-userlocation1 <- geocode(userframe.dt$location[2001:4000])
-userlocation2 <- geocode(userframe.dt$location[4001:6000])
-userlocation3 <- geocode(userframe.dt$location[6001:8000])
-userlocation4 <- geocode(userframe.dt$location[8001:10000])
-userlocation5 <- geocode(userframe.dt$location[10001:12000])
-userlocation6 <- geocode(userframe.dt$location[12001:14000])
-userlocation7 <- geocode(userframe.dt$location[14001:16000])
-userlocation8 <- geocode(userframe.dt$location[16001:17066])
-location <- bind_rows(userlocation,userlocation1)
-
-register_google(key = google.key)
+# Repeat steps for all hashtags
 suitweets.df <- twListToDF(suicidetweets)
 userinfo_s <- lookupUsers(suitweets.df$screenName)
 userframe_s <- twListToDF(userinfo_s)
 userframe.dt_s <- data.table(userframe)
 userframe.dt_s$location <-
   userframe.dt_s$location[!userframe.dt_s$location %in% ""]
-userlocation_s <- geocode(userframe.dt_s$location[1:2500])
-userlocation1_s <- geocode(userframe.dt_s$location[2501:5000])
-userlocation2_s <- geocode(userframe.dt_s$location[4001:6000])
-userlocation3 <- geocode(userframe.dt$location[6001:8000])
-userlocation4 <- geocode(userframe.dt$location[8001:10000])
-userlocation5 <- geocode(userframe.dt$location[10001:12000])
-userlocation6 <- geocode(userframe.dt$location[12001:14000])
-userlocation7 <- geocode(userframe.dt$location[14001:16000])
-userlocation8 <- geocode(userframe.dt$location[16001:17066])
-location <- bind_rows(userlocation,userlocation1)
+location_s <- geocode(userframe.dt_s$location)
 
-register_google(key = google.key)
 deptweets.df <- twListToDF(depressiontweets)
 userinfo_d <- lookupUsers(deptweets.df$screenName)
 userframe_d <- twListToDF(userinfo_d)
 userframe.dt_d <- data.table(userframe_d)
 userframe.dt_d$location <-
   userframe.dt_d$location[!userframe.dt_d$location %in% ""]
-userlocation_d <- geocode(userframe.dt_d$location[1:2500])
-userlocation1_d <- geocode(userframe.dt_d$location[2501:5000])
-userlocation2 <- geocode(userframe.dt$location[4001:6000])
-userlocation3 <- geocode(userframe.dt$location[6001:8000])
-userlocation4 <- geocode(userframe.dt$location[8001:10000])
-userlocation5 <- geocode(userframe.dt$location[10001:12000])
-userlocation6 <- geocode(userframe.dt$location[12001:14000])
-userlocation7 <- geocode(userframe.dt$location[14001:16000])
-userlocation8 <- geocode(userframe.dt$location[16001:17066])
-location_s <- bind_rows(userlocation_s,userlocation1_s)
+location_d <- geocode(userframe.dt_d$location)
 
-register_google(key = google.key)
 anxtweets.df <- twListToDF(anxietytweets)
 userinfo_a <- lookupUsers(anxtweets.df$screenName)
 userframe_a <- twListToDF(userinfo_a)
 userframe.dt_a <- data.table(userframe_a)
 userframe.dt_a$location <-
   userframe.dt_a$location[!userframe.dt_a$location %in% ""]
-userlocation_a <- geocode(userframe.dt_a$location[1:500])
-userlocation1_a <- geocode(userframe.dt_a$location[501:3000])
-userlocation2_a <- geocode(userframe.dt_a$location[3001:5500])
-userlocation3 <- geocode(userframe.dt$location[6001:8000])
-userlocation4 <- geocode(userframe.dt$location[8001:10000])
-userlocation5 <- geocode(userframe.dt$location[10001:12000])
-userlocation6 <- geocode(userframe.dt$location[12001:14000])
-userlocation7 <- geocode(userframe.dt$location[14001:16000])
-userlocation8 <- geocode(userframe.dt$location[16001:17066])
-location <- bind_rows(userlocation,userlocation1)
+userlocation_a <- geocode(userframe.dt_a$location)
 
-register_google(key = google.key)
 ptsdtweets.df <- twListToDF(ptsdtweets)
 userinfo_p <- lookupUsers(ptsdtweets.df$screenName)
 userframe_p <- twListToDF(userinfo_p)
 userframe.dt_p <- data.table(userframe_a)
 userframe.dt_p$location <-
   userframe.dt_p$location[!userframe.dt_p$location %in% ""]
-userlocation_p <- geocode(userframe.dt_p$location[1:2500])
-userlocation1_a <- geocode(userframe.dt_a$location[2501:5000])
-userlocation2_a <- geocode(userframe.dt_a$location[5001:7500])
-userlocation3 <- geocode(userframe.dt$location[6001:8000])
-userlocation4 <- geocode(userframe.dt$location[8001:10000])
-userlocation5 <- geocode(userframe.dt$location[10001:12000])
-userlocation6 <- geocode(userframe.dt$location[12001:14000])
-userlocation7 <- geocode(userframe.dt$location[14001:16000])
-userlocation8 <- geocode(userframe.dt$location[16001:17066])
-location <- bind_rows(userlocation,userlocation1)
+location_p <- geocode(userframe.dt_p$location[1:2500])

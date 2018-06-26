@@ -1,6 +1,0 @@
-totcorpus <- VCorpus(VectorSource(tottxt))
-totcorpus <- tm_map(totcorpus, tolower)
-totcorpus <- tm_map(totcorpus, removePunctuation, preserve_intra_word_dashes = TRUE)
-totcorpus <- tm_map(totcorpus, removeNumbers)
-totcorpus <- tm_map(totcorpus, removeWords, stopwords("english"))
-totcorpus <- tm_map(totcorpus, PlainTextDocument)
